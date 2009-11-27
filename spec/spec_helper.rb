@@ -10,5 +10,9 @@ module SpecHelper
       instance_eval(&block)
     end
   end
+  
+  def reflect(field)
+    @class.reflect_on_validations_for(field)
+  end
 end
 
