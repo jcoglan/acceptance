@@ -10,6 +10,7 @@ module Acceptance
     end
     
     def validates_acceptance_of(*attr_names)
+      super
       options = ReflectsOnValidations.extract_options_from_array(attr_names)
       attr_names.each do |attribute|
         key = attribute.to_sym

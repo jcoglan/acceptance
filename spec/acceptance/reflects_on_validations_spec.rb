@@ -26,6 +26,10 @@ describe Acceptance::ReflectsOnValidations do
       @tests.first.field.should == :tests
       @tests.first.message.should be_nil
     end
+    
+    it "retains validation logic" do
+      @class.new(:terms => false).should_not be_valid
+    end
   end
   
 end
