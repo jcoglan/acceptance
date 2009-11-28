@@ -153,5 +153,44 @@ describe Acceptance::ReflectsOnValidations do
     end
   end
   
+  describe :format do
+    before :each do
+      @class = make_class do
+        validates_format_of :password, :with => /pattern/, :allow_nil => true
+        validates_format_of :email,    :with => /pattern/, :message => "Invalid email!"
+        validates_format_of :username, :with => /pattern/, :allow_blank => true
+      end
+    end
+    
+    it "reflects on validate_format_of :password" do
+      reflect(:password).first.should reflect_validation_of :password,
+                                      :format,
+                                      :pattern => /pattern/,
+                                      :allow_nil? => true,
+                                      :message => nil,
+                                      :allow_blank? => false
+    end
+    
+    it "reflects on validate_format_of :email" do
+      reflect(:email).first.should reflect_validation_of :email,
+                                   :format,
+                                   :pattern => /pattern/,
+                                   :message => "Invalid email!"
+    end
+    
+    it "reflects on validate_format_of :username" do
+      reflect(:username).first.should reflect_validation_of :username,
+                                      :format,
+                                      :pattern => /pattern/,
+                                      :allow_blank? => true
+    end
+    
+    it "retains validation logic" do
+      factory(@class, :password => "wrong").should_not be_valid
+      factory(@class, :email => "wrong").should_not be_valid
+      factory(@class, :username => "wrong").should_not be_valid
+    end
+  end
+  
 end
 
