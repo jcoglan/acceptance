@@ -121,7 +121,7 @@ describe Acceptance::ReflectsOnValidations do
       end
     end
     
-    it "reflects on validates_exclusion_of :password" do
+    it "reflects on validates_inclusion_of :password" do
       reflect(:password).first.should reflect_validation_of :password,
                                       :inclusion,
                                       :in => %w[test pass],
@@ -130,21 +130,21 @@ describe Acceptance::ReflectsOnValidations do
                                       :allow_blank? => false
     end
     
-    it "reflects on validates_exclusion_of :email" do
+    it "reflects on validates_inclusion_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                    :inclusion,
                                    :in => %w[admin],
                                    :message => "Don't use a boring address"
     end
     
-    it "reflects on validates_exclusion_of :age" do
+    it "reflects on validates_inclusion_of :age" do
       reflect(:age).first.should reflect_validation_of :age,
                                  :inclusion,
                                  :in => 18..30,
                                  :allow_nil? => true
     end
     
-    it "reflects on validates_exclusion_of :username" do
+    it "reflects on validates_inclusion_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :inclusion,
                                       :in => %w[usr],
@@ -168,7 +168,7 @@ describe Acceptance::ReflectsOnValidations do
       end
     end
     
-    it "reflects on validate_format_of :password" do
+    it "reflects on validates_format_of :password" do
       reflect(:password).first.should reflect_validation_of :password,
                                       :format,
                                       :pattern => /pattern/,
@@ -177,14 +177,14 @@ describe Acceptance::ReflectsOnValidations do
                                       :allow_blank? => false
     end
     
-    it "reflects on validate_format_of :email" do
+    it "reflects on validates_format_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                    :format,
                                    :pattern => /pattern/,
                                    :message => "Invalid email!"
     end
     
-    it "reflects on validate_format_of :username" do
+    it "reflects on validates_format_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :format,
                                       :pattern => /pattern/,
