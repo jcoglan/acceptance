@@ -21,6 +21,7 @@ module SpecHelper
         when :inclusion then reflection.in.first
         when :exclusion then "any other value"
         when :format then reflection.pattern.source
+        when :presence then true
         when :confirmation then
           instance.__send__("#{reflection.field}_confirmation=", "foo")
           "foo"

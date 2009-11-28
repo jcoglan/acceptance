@@ -198,5 +198,31 @@ describe Acceptance::ReflectsOnValidations do
     end
   end
   
+  describe :presence do
+    before :each do
+      @class = make_class do
+        validates_presence_of :username, :message => "You should have a name"
+        validates_presence_of :email
+      end
+    end
+    
+    it "reflects on validates_presence_of :username" do
+      reflect(:username).first.should reflect_validation_of :username,
+                                      :presence,
+                                      :message => "You should have a name"
+    end
+    
+    it "reflects on validates_presence_of :email" do
+      reflect(:email).first.should reflect_validation_of :email,
+                                      :presence,
+                                      :message => nil
+    end
+    
+    it "retains validation logic" do
+      factory(@class, :username => nil).should_not be_valid
+      factory(@class, :email => nil).should_not be_valid
+    end
+  end
+  
 end
 

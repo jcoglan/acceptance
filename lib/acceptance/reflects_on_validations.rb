@@ -1,7 +1,7 @@
 module Acceptance
   module ReflectsOnValidations
     
-    VALIDATION_TYPES = %w[acceptance confirmation exclusion inclusion format]
+    VALIDATION_TYPES = %w[acceptance confirmation exclusion inclusion format presence]
     
     def self.extract_options_from_array(attr_names)
       attr_names.last.is_a?(Hash) ? attr_names.pop : {}
