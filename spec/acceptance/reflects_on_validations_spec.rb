@@ -57,5 +57,53 @@ describe Acceptance::ReflectsOnValidations do
     end
   end
   
+  describe :exclusion do
+    before :each do
+      @class = make_class do
+        validates_exclusion_of :password, :in => %w[test pass]
+        validates_exclusion_of :email,    :in => %w[admin], :message => "Don't use a boring address"
+        validates_exclusion_of :age,      :in => 18..30,    :allow_nil => true
+        validates_exclusion_of :username, :in => %w[usr],   :allow_blank => true
+      end
+    end
+    
+    it "reflects on validates_exclusion_of :password" do
+      reflect(:password).first.should reflect_validation_of :password,
+                                      :exclusion,
+                                      :in => %w[test pass],
+                                      :message => nil,
+                                      :allow_nil? => false,
+                                      :allow_blank? => false
+    end
+    
+    it "reflects on validates_exclusion_of :email" do
+      reflect(:email).first.should reflect_validation_of :email,
+                                   :exclusion,
+                                   :in => %w[admin],
+                                   :message => "Don't use a boring address"
+    end
+    
+    it "reflects on validates_exclusion_of :password" do
+      reflect(:age).first.should reflect_validation_of :age,
+                                 :exclusion,
+                                 :in => 18..30,
+                                 :allow_nil? => true
+    end
+    
+    it "reflects on validates_exclusion_of :password" do
+      reflect(:username).first.should reflect_validation_of :username,
+                                      :exclusion,
+                                      :in => %w[usr],
+                                      :allow_blank? => true
+    end
+    
+    it "retains validation logic" do
+      @class.new(:password => "test").should_not be_valid
+      @class.new(:email => "admin").should_not be_valid
+      @class.new(:age => "24").should_not be_valid
+      @class.new(:username => "usr").should_not be_valid
+    end
+  end
+  
 end
 
