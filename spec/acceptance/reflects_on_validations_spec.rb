@@ -83,14 +83,14 @@ describe Acceptance::ReflectsOnValidations do
                                    :message => "Don't use a boring address"
     end
     
-    it "reflects on validates_exclusion_of :password" do
+    it "reflects on validates_exclusion_of :age" do
       reflect(:age).first.should reflect_validation_of :age,
                                  :exclusion,
                                  :in => 18..30,
                                  :allow_nil? => true
     end
     
-    it "reflects on validates_exclusion_of :password" do
+    it "reflects on validates_exclusion_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :exclusion,
                                       :in => %w[usr],
@@ -131,14 +131,14 @@ describe Acceptance::ReflectsOnValidations do
                                    :message => "Don't use a boring address"
     end
     
-    it "reflects on validates_exclusion_of :password" do
+    it "reflects on validates_exclusion_of :age" do
       reflect(:age).first.should reflect_validation_of :age,
                                  :inclusion,
                                  :in => 18..30,
                                  :allow_nil? => true
     end
     
-    it "reflects on validates_exclusion_of :password" do
+    it "reflects on validates_exclusion_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :inclusion,
                                       :in => %w[usr],
