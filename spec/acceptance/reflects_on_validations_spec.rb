@@ -14,17 +14,15 @@ describe Acceptance::ReflectsOnValidations do
     end
     
     it "reflects on validates_acceptance_of :terms" do
-      @terms.size.should == 1
-      @terms.first.macro.should == :acceptance
-      @terms.first.field.should == :terms
-      @terms.first.message.should == "Only on our terms"
+      @terms.first.should reflect_validation_of :terms,
+                          :acceptance,
+                          :message => "Only on our terms"
     end
     
     it "reflects on validates_acceptance_of :tests" do
-      @tests.size.should == 1
-      @tests.first.macro.should == :acceptance
-      @tests.first.field.should == :tests
-      @tests.first.message.should be_nil
+      @tests.first.should reflect_validation_of :tests,
+                          :acceptance,
+                          :message => nil
     end
     
     it "retains validation logic" do
@@ -43,15 +41,15 @@ describe Acceptance::ReflectsOnValidations do
     end
     
     it "reflects on validates_confirmation_of :email" do
-      @email.first.should reflect_validation_of(:email,
+      @email.first.should reflect_validation_of :email,
                           :confirmation,
-                          :message => "You should confirm your email")
+                          :message => "You should confirm your email"
     end
     
     it "reflects on validates_confirmation_of :password" do
-      @password.first.should reflect_validation_of(:password,
+      @password.first.should reflect_validation_of :password,
                              :confirmation,
-                             :message => nil)
+                             :message => nil
     end
     
     it "retains validation logic" do
