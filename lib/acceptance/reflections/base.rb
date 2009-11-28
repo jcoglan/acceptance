@@ -14,7 +14,8 @@ module Acceptance
       end
       
       def message
-        options[:message]
+        msg = options[:message]
+        msg && msg.dup
       end
       
     end

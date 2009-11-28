@@ -15,6 +15,25 @@ module SpecHelper
   def reflect(field)
     @class.reflect_on_validations_for(field)
   end
+  
+  def reflect_validation_of(field, macro, options = {})
+    ReflectionMatcher.new(field, macro, options)
+  end
+  
+  class ReflectionMatcher
+    def initialize(field, macro, options)
+      @field, @macro, @options = field, macro, options
+    end
+    
+    def matches?(actual)
+      actual.should_not == nil
+      
+      actual.field.should == @field
+      actual.macro.should == @macro
+      
+      @options.each { |key, value| actual.__send__(key).should == value }
+    end
+  end
 end
 
 ActiveRecord::Base.establish_connection(
@@ -23,6 +42,8 @@ ActiveRecord::Base.establish_connection(
 
 ActiveRecord::Schema.define do
   create_table :sti, :force => true do |t|
+    t.string :email
+    t.string :password
   end
 end
 
