@@ -12,6 +12,28 @@ module SpecHelper
     end
   end
   
+  def factory(klass, attributes = {})
+    instance = klass.new
+    
+    klass.reflect_on_all_validations.each do |reflection|
+      value = case reflection.macro
+        when :acceptance then true
+        when :inclusion then reflection.in.first
+        when :exclusion then "any other value"
+        when :confirmation then
+          instance.__send__("#{reflection.field}_confirmation=", "foo")
+          "foo"
+      end
+      
+      instance.__send__("#{reflection.field}=", value)
+    end
+    
+    attributes.inject(instance) do |object, (key,value)|
+      object.__send__("#{key}=", value)
+      object
+    end
+  end
+  
   def reflect(field)
     @class.reflect_on_validations_for(field)
   end

@@ -26,7 +26,7 @@ describe Acceptance::ReflectsOnValidations do
     end
     
     it "retains validation logic" do
-      @class.new(:terms => false).should_not be_valid
+      factory(@class, :terms => false).should_not be_valid
     end
   end
   
@@ -53,7 +53,7 @@ describe Acceptance::ReflectsOnValidations do
     end
     
     it "retains validation logic" do
-      @class.new(:email => "one@example.com", :email_confirmation => "another@example.com").should_not be_valid
+      factory(@class, :email => "one@example.com", :email_confirmation => "another@example.com").should_not be_valid
     end
   end
   
@@ -98,10 +98,10 @@ describe Acceptance::ReflectsOnValidations do
     end
     
     it "retains validation logic" do
-      @class.new(:password => "test").should_not be_valid
-      @class.new(:email => "admin").should_not be_valid
-      @class.new(:age => 24).should_not be_valid
-      @class.new(:username => "usr").should_not be_valid
+      factory(@class, :password => "test").should_not be_valid
+      factory(@class, :email => "admin").should_not be_valid
+      factory(@class, :age => 24).should_not be_valid
+      factory(@class, :username => "usr").should_not be_valid
     end
   end
   
@@ -146,10 +146,10 @@ describe Acceptance::ReflectsOnValidations do
     end
     
     it "retains validation logic" do
-      @class.new(:password => "not test").should_not be_valid
-      @class.new(:email => "not admin").should_not be_valid
-      @class.new(:age => 44).should_not be_valid
-      @class.new(:username => "not usr").should_not be_valid
+      factory(@class, :password => "not test").should_not be_valid
+      factory(@class, :email => "not admin").should_not be_valid
+      factory(@class, :age => 44).should_not be_valid
+      factory(@class, :username => "not usr").should_not be_valid
     end
   end
   

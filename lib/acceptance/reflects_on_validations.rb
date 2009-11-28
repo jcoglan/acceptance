@@ -7,6 +7,10 @@ module Acceptance
       attr_names.last.is_a?(Hash) ? attr_names.pop : {}
     end
     
+    def reflect_on_all_validations
+      validations.inject([]) { |list, (field,v)| list + v }
+    end
+    
     def reflect_on_validations_for(field)
       (validations[field.to_sym] || []).dup
     end
