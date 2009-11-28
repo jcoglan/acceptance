@@ -6,7 +6,7 @@ end
 Given /^I have specified a code generator$/ do
   Acceptance.generator = Class.new(Acceptance::Generator) {
     validate :presence do |reflection|
-      "form('#{form_id}').requires('#{reflection.field}');"
+      "form('#{form_id}').requires('#{object_name}[#{reflection.field}]');"
     end
   }
 end

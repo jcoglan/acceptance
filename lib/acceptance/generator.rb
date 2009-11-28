@@ -5,13 +5,13 @@ module Acceptance
       define_method("generate_#{macro}_validation", &block)
     end
     
-    attr_reader :form_id
+    attr_reader :form_id, :object_name
     
     def initialize(form_id, object, name)
-      @form_id = form_id
-      @object  = object
-      @name    = name
-      @fields  = []
+      @form_id      = form_id
+      @object       = object
+      @object_name  = name
+      @fields       = []
     end
     
     def <<(field)

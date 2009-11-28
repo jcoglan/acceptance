@@ -10,6 +10,6 @@ Feature: Generate JavaScript from Active Record validations
     Then I should see a form called "new_article"
     And I should see a script containing
     """
-    form('new_article').requires('title');
+    form('new_article').requires('article[title]');
     """
 
