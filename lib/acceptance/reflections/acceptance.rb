@@ -9,6 +9,14 @@ module Acceptance
         @macro = :acceptance
       end
       
+      def allow_nil?
+        @options.has_key?(:allow_nil) ? @options[:allow_nil] : true
+      end
+      
+      def accept
+        @options[:accept] || "1"
+      end
+      
     end
   end
 end

@@ -7,22 +7,30 @@ describe Acceptance::ReflectsOnValidations do
     before :each do
       @class = make_class do
         validates_acceptance_of :terms, :message => "Only on our terms"
-        validates_acceptance_of :tests
+        validates_acceptance_of :something, :allow_nil => false
+        validates_acceptance_of :tests, :accept => true
       end
-      @terms = reflect :terms
-      @tests = reflect :tests
     end
     
     it "reflects on validates_acceptance_of :terms" do
-      @terms.first.should reflect_validation_of :terms,
-                          :acceptance,
-                          :message => "Only on our terms"
+      reflect(:terms).first.should reflect_validation_of :terms,
+                                   :acceptance,
+                                   :message => "Only on our terms",
+                                   :allow_nil? => true,
+                                   :accept => "1"
+    end
+    
+    it "reflects on validates_acceptance_of :something" do
+      reflect(:something).first.should reflect_validation_of :something,
+                                       :acceptance,
+                                       :allow_nil? => false
     end
     
     it "reflects on validates_acceptance_of :tests" do
-      @tests.first.should reflect_validation_of :tests,
-                          :acceptance,
-                          :message => nil
+      reflect(:tests).first.should reflect_validation_of :tests,
+                                   :acceptance,
+                                   :message => nil,
+                                   :accept => true
     end
     
     it "retains validation logic" do
@@ -36,20 +44,18 @@ describe Acceptance::ReflectsOnValidations do
         validates_confirmation_of :email, :message => "You should confirm your email"
         validates_confirmation_of :password
       end
-      @email    = reflect :email
-      @password = reflect :password
     end
     
     it "reflects on validates_confirmation_of :email" do
-      @email.first.should reflect_validation_of :email,
-                          :confirmation,
-                          :message => "You should confirm your email"
+      reflect(:email).first.should reflect_validation_of :email,
+                                   :confirmation,
+                                   :message => "You should confirm your email"
     end
     
     it "reflects on validates_confirmation_of :password" do
-      @password.first.should reflect_validation_of :password,
-                             :confirmation,
-                             :message => nil
+      reflect(:password).first.should reflect_validation_of :password,
+                                     :confirmation,
+                                     :message => nil
     end
     
     it "retains validation logic" do
