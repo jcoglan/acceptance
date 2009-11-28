@@ -15,8 +15,8 @@ Given /^the Article class requires "([^\"]*)" to be present$/ do |field|
   ::Article.validates_presence_of field
 end
 
-Then /^I should see a form$/ do
-  response.should have_tag('form')
+Then /^I should see a form called "([^\"]*)"$/ do |id|
+  response.should have_tag('form#' + id)
 end
 
 
