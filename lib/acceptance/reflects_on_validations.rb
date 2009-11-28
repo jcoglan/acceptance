@@ -17,7 +17,7 @@ module Acceptance
     
     VALIDATION_TYPES.each do |validation_type|
       define_method "validates_#{validation_type}_of" do |*attr_names|
-        super
+        super(*attr_names)
         options = ReflectsOnValidations.extract_options_from_array(attr_names)
         attr_names.each do |attribute|
           key = attribute.to_sym
