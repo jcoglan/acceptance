@@ -1,6 +1,8 @@
 module Acceptance
   module ReflectsOnValidations
     
+    VALIDATION_TYPES = %w[acceptance confirmation exclusion]
+    
     def self.extract_options_from_array(attr_names)
       attr_names.last.is_a?(Hash) ? attr_names.pop : {}
     end
@@ -9,33 +11,15 @@ module Acceptance
       (validations[field.to_sym] || []).dup
     end
     
-    def validates_acceptance_of(*attr_names)
-      super
-      options = ReflectsOnValidations.extract_options_from_array(attr_names)
-      attr_names.each do |attribute|
-        key = attribute.to_sym
-        validations[key] ||= []
-        validations[key] << Reflections::ValidatesAcceptance.new(key, options)
-      end
-    end
-    
-    def validates_confirmation_of(*attr_names)
-      super
-      options = ReflectsOnValidations.extract_options_from_array(attr_names)
-      attr_names.each do |attribute|
-        key = attribute.to_sym
-        validations[key] ||= []
-        validations[key] << Reflections::ValidatesConfirmation.new(key, options)
-      end
-    end
-    
-    def validates_exclusion_of(*attr_names)
-      super
-      options = ReflectsOnValidations.extract_options_from_array(attr_names)
-      attr_names.each do |attribute|
-        key = attribute.to_sym
-        validations[key] ||= []
-        validations[key] << Reflections::ValidatesExclusion.new(key, options)
+    VALIDATION_TYPES.each do |validation_type|
+      define_method "validates_#{validation_type}_of" do |*attr_names|
+        super
+        options = ReflectsOnValidations.extract_options_from_array(attr_names)
+        attr_names.each do |attribute|
+          key = attribute.to_sym
+          validations[key] ||= []
+          validations[key] << Reflections.create(validation_type, key, options)
+        end
       end
     end
     

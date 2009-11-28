@@ -1,10 +1,12 @@
+require File.dirname(__FILE__) + '/base'
+
 module Acceptance
   module Reflections
-    class ValidatesConfirmation < Base
+    class Acceptance < Base
       
       def initialize(*args)
         super
-        @macro = :confirmation
+        @macro = :acceptance
       end
       
     end

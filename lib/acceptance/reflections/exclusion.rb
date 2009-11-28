@@ -1,6 +1,8 @@
+require File.dirname(__FILE__) + '/base'
+
 module Acceptance
   module Reflections
-    class ValidatesExclusion < Base
+    class Exclusion < Base
       
       def initialize(*args)
         super
