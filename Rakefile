@@ -5,7 +5,7 @@ require 'fileutils'
 
 desc 'Build the JavaScript client'
 task :build do
-  require 'vendor/jake/lib/jake'
+  require 'jake'
   puts 'Building JavaScript client ...'
   Jake.build!(File.dirname(__FILE__))
   

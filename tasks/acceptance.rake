@@ -5,7 +5,13 @@ namespace :acceptance do
     plugin_dir = File.expand_path(File.dirname(__FILE__) + '/..')
     app_dir = plugin_dir + '/../../..'
     
-    require plugin_dir + '/vendor/jake/lib/jake'
+    begin
+      require 'jake'
+    rescue LoadError
+      puts 'You need Jake to build the client. Just run:'
+      puts '[sudo] gem install jake'
+    end
+    
     puts 'Building JavaScript client ...'
     Jake.build!(plugin_dir)
     
