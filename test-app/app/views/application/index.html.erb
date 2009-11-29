@@ -1,5 +1,35 @@
-<% validated_form_for(@article) do |f| %>
-  <%= f.label :title %>
-  <%= f.text_field :title %>
-<% end %>
+<!doctype html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Page Title</title>
+    <%= javascript_include_tag 'acceptance' %>
+  </head>
+  <body>
+  
+    <% validated_form_for(@article) do |f| %>
+      <%= field f, :title %>
+      <%= submit_tag "Save" %>
+    <% end %>
+    
+    <script type="text/javascript">
+    Acceptance.onValidation(function(field) {
+      var input     = field.input,
+          container = input.parentNode,
+          errorElem = container.getElementsByTagName('span')[0];
+      
+      if (field.valid) {
+        if (errorElem) errorElem.parentNode.removeChild(errorElem);
+      } else {
+        if (!errorElem) {
+          errorElem = document.createElement('span');
+          container.appendChild(errorElem);
+        }
+        errorElem.innerHTML = field.errors[0];
+      }
+    });
+    </script>
+  
+  </body>
+</html>
 

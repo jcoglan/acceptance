@@ -3,3 +3,5 @@
 *.sqlite3
 *.log
 webrat-*
+javascript/build
+test-app/public

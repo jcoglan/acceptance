@@ -1,3 +1,7 @@
 cucumber:
   adapter: sqlite3
   database: ":memory:"
+
+development:
+  adapter: sqlite3
+  database: ":memory:"

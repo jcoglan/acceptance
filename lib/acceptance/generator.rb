@@ -5,6 +5,10 @@ module Acceptance
       define_method("generate_#{macro}_validation", &block)
     end
     
+    def self.message(macro, &block)
+      define_method("generate_#{macro}_message", &block)
+    end
+    
     attr_reader :form_id, :object_name
     
     def initialize(form_id, object, name)
@@ -33,8 +37,14 @@ module Acceptance
     
     def generate_code_for(validation)
       method = "generate_#{validation.macro}_validation"
-      return unless respond_to?(method)
+      return "" unless respond_to?(method)
       __send__(method, validation)
+    end
+    
+    def message_for(validation)
+      method = "generate_#{validation.macro}_message"
+      return __send__(method, validation) if respond_to?(method)
+      "#{ validation.field.to_s.humanize } #{ validation.message }"
     end
     
     TEMPLATE = <<-JAVASCRIPT
@@ -47,6 +57,19 @@ module Acceptance
     </script>
     JAVASCRIPT
     
+  end
+  
+  class DefaultGenerator < Generator
+    validate :presence do |validation|
+      <<-SCRIPT
+      Acceptance.form('#{ form_id }').
+      requires('#{ object_name }[#{ validation.field }]', '#{ message_for validation }');
+      SCRIPT
+    end
+    
+    message :presence do |validation|
+      "Please enter a #{ validation.field.to_s.humanize.downcase }"
+    end
   end
 end
 

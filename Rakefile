@@ -1,6 +1,17 @@
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'
+require 'fileutils'
+
+desc 'Build the JavaScript client'
+task :build do
+  require 'vendor/jake/lib/jake'
+  puts 'Building JavaScript client ...'
+  Jake.build!(File.dirname(__FILE__))
+  
+  FileUtils.mkdir_p 'test-app/public/javascripts'
+  FileUtils.cp 'javascript/build/acceptance.js', 'test-app/public/javascripts/acceptance.js'
+end
 
 desc 'Default: run unit tests.'
 task :default => :test

@@ -33,5 +33,7 @@ module Acceptance
     end
     
   end
+  
+  self.generator = DefaultGenerator
 end
 
