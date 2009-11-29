@@ -43,7 +43,7 @@ Acceptance.Description = Acceptance.Class({
     Acceptance.each(this._requirements, function(name, field) {
       if (!field._valid) valid = false;
     });
-//    Acceptance.Dom.set(this._submit, {disabled: !valid});
+    Acceptance.Dom.set(this._submit, {disabled: !valid});
   }
 }, {
   _registry: {},
