@@ -8,7 +8,7 @@ Feature: Generate JavaScript from Active Record validations
     Given the Article class requires "title" to be present
     When I go to the home page
     Then I should see a form called "new_article"
-    And I should see a script containing
+    And I should see a script called "new_article_validation" containing
     """
     form('new_article').requires('article[title]');
     """

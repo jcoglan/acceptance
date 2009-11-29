@@ -20,7 +20,7 @@ Then /^I should see a form called "([^\"]*)"$/ do |id|
 end
 
 
-Then /^I should see a script containing$/ do |string|
-  Then "I should see \"#{ string }\" within \"script\""
+Then /^I should see a script called "([^\"]*)" containing$/ do |id, string|
+  Then "I should see \"#{ string }\" within \"script\##{ id }\""
 end
 

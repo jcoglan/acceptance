@@ -48,7 +48,7 @@ module Acceptance
     end
     
     TEMPLATE = <<-JAVASCRIPT
-    <script type="text/javascript">
+    <script type="text/javascript" id="<%= form_id %>_validation">
     (function() {
       <% validations.each do |validation| -%>
         <%= generate_code_for validation %>
