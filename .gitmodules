@@ -1,0 +1,3 @@
+[submodule "vendor/jake"]
+	path = vendor/jake
+	url = git://github.com/jcoglan/jake.git
