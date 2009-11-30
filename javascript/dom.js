@@ -35,18 +35,6 @@ Acceptance.Dom = {
       data[input.name] = input.value;
     });
     return data;
-  },
-  
-  set: function(element, attributes) {
-    if (!element) return;
-    Acceptance.each(attributes, function(key, value) {
-      switch (true) {
-        case value === true:    element.setAttribute(key, key); break;
-        case value === false:   element.removeAttribute(key);   break;
-        
-        default: element.setAttribute(key, value);
-      }
-    });
   }
 };
 

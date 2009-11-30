@@ -43,7 +43,6 @@ Acceptance.Field = Acceptance.Class({
     });
     
     this._valid = (errors.length === 0);
-    this._form.update();
     Acceptance.notifyClient(this, errors);
   }
 }, {
