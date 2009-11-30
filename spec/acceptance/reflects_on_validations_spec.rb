@@ -198,6 +198,34 @@ describe Acceptance::ReflectsOnValidations do
     end
   end
   
+  describe :length do
+    before :each do
+      @class = make_class do
+        validates_length_of :username, :is => 7, :message => "Your name should have 7 letters"
+        validates_length_of :email, :within => 10..30
+      end
+    end
+    
+    it "reflects on validates_length_of :username" do
+      reflect(:username).first.should reflect_validation_of :username,
+                                      :length,
+                                      :is => 7,
+                                      :message => "Your name should have 7 letters"
+    end
+    
+    it "reflects on validates_length_of :email" do
+      reflect(:email).first.should reflect_validation_of :email,
+                                   :length,
+                                   :within => 10..30,
+                                   :message => nil
+    end
+    
+    it "retains validation logic" do
+      factory(@class, :username => 'me').should_not be_valid
+      factory(@class, :email => 'j@me.com').should_not be_valid
+    end
+  end
+  
   describe :presence do
     before :each do
       @class = make_class do

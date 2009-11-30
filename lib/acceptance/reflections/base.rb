@@ -4,6 +4,12 @@ module Acceptance
     class Base
       attr_reader :macro, :field
       
+      def self.option_reader(*fields)
+        fields.each do |field|
+          define_method(field) { @options[field] }
+        end
+      end
+      
       def initialize(field, options = {})
         @field = field.to_sym
         @options = options
