@@ -11,7 +11,8 @@ Acceptance.Event = Acceptance.Class({
   _registry: [],
   
   on: function(element, eventName, callback, scope) {
-    if (!element || element.nodeType !== 1) return;
+    if (!element) return;
+    if (element.nodeType !== 1 && element !== this.ENV) return;
     
     var listener = function(event) {
       callback.call(scope, element, new Acceptance.Event(event));
