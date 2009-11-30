@@ -34,8 +34,6 @@ Acceptance = {
     
     klass.prototype.klass = klass;
     return klass;
-  },
-  
-  ENV: this
+  }
 };
 

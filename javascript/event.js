@@ -56,10 +56,12 @@ Acceptance.Event = Acceptance.Class({
       
       this._registry.splice(i,1);
     }
-  }
+  },
+  
+  ENV: this
 });
 
-Acceptance.Event.on(Acceptance.ENV, 'unload',
+Acceptance.Event.on(Acceptance.Event.ENV, 'unload',
     Acceptance.Event.remove,
     Acceptance.Event);
 
