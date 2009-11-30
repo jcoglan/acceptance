@@ -60,6 +60,21 @@ module Acceptance
   end
   
   class DefaultGenerator < Generator
+    validate :length do |validation|
+      if validation.is
+        value = validation.is
+      else
+        range = validation.within # TODO alias as #in
+        min = range ? range.min : validation.minimum
+        max = range ? range.max : validation.maximum
+        value = "{" + [min && "minimum: #{min}", max && "maximum: #{max}"].compact.join(', ') + "}"
+      end
+      <<-SCRIPT
+      Acceptance.form('#{ form_id }').requires('#{ object_name }[#{ validation.field }]').
+      toHaveLength(#{ value }, '#{ message_for validation }');
+      SCRIPT
+    end
+    
     validate :presence do |validation|
       <<-SCRIPT
       Acceptance.form('#{ form_id }').
