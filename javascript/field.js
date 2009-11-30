@@ -1,4 +1,4 @@
-Acceptance.Requirement = Acceptance.Class({
+Acceptance.Field = Acceptance.Class({
   initialize: function(form, fieldName, message) {
     this._form      = form;
     this._fieldName = fieldName;

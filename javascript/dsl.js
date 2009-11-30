@@ -1,8 +1,8 @@
 Acceptance.DSL = {
   Root: {
     form: function(id) {
-      var description = Acceptance.Description.get(id);
-      return new Acceptance.DSL.Description(description);
+      var form = Acceptance.Form.get(id);
+      return new Acceptance.DSL.Description(form);
     }
   },
   
@@ -12,9 +12,9 @@ Acceptance.DSL = {
     },
     
     requires: function(field, message) {
-      var requirement = this._form.getRequirement(field);
-      requirement.setMessage(message);
-      return new Acceptance.DSL.Requirement(requirement);
+      var field = this._form.getField(field);
+      field.setMessage(message);
+      return new Acceptance.DSL.Requirement(field);
     }
   }),
   
@@ -32,15 +32,15 @@ Acceptance.extend(Acceptance, {
     this._validationHook = [block, context];
   },
   
-  notifyClient: function(requirement, errors) {
+  notifyClient: function(field, errors) {
     var callback = this._validationHook;
     if (!callback) return;
     
     callback[0].call(callback[1], {
-      form:   requirement._form.getForm(),
-      input:  requirement.getInput(),
-      name:   requirement._fieldName,
-      valid:  requirement._valid,
+      form:   field._form.getForm(),
+      input:  field.getInput(),
+      name:   field._fieldName,
+      valid:  field._valid,
       errors: errors.slice()
     });
   }

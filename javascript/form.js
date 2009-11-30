@@ -1,4 +1,4 @@
-Acceptance.Description = Acceptance.Class({
+Acceptance.Form = Acceptance.Class({
   initialize: function(formId) {
     this._formId       = formId;
     this._requirements = {};
@@ -32,10 +32,10 @@ Acceptance.Description = Acceptance.Class({
     return valid;
   },
   
-  getRequirement: function(field) {
+  getField: function(field) {
     return this._requirements[field] =
             this._requirements[field] ||
-            new Acceptance.Requirement(this, field);
+            new Acceptance.Field(this, field);
   },
   
   update: function() {

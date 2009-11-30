@@ -17,7 +17,7 @@ packages:
     - utils
     - dom
     - event
-    - description
-    - requirement
+    - form
+    - field
     - dsl
 
