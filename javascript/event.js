@@ -62,6 +62,6 @@ Acceptance.Event = Acceptance.Class({
 });
 
 Acceptance.Event.on(Acceptance.Event.ENV, 'unload',
-    Acceptance.Event.remove,
+    Acceptance.Event.detach,
     Acceptance.Event);
 
