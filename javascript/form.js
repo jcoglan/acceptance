@@ -20,7 +20,7 @@ Acceptance.Form = Acceptance.Class({
     return this._form && Acceptance.Dom.exists(this._form);
   },
   
-  _handleSubmit: function(event) {
+  _handleSubmit: function(form, event) {
     if (!this.isValid()) event.stopDefault();
   },
   

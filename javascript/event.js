@@ -13,25 +13,22 @@ Acceptance.Event = Acceptance.Class({
   on: function(element, eventName, callback, scope) {
     if (!element || element.nodeType !== 1) return;
     
-    var wrapped = function(event) {
-      callback.call(scope, new Acceptance.Event(event));
+    var listener = function(event) {
+      callback.call(scope, element, new Acceptance.Event(event));
     };
     
     if (element.addEventListener)
-      element.addEventListener(eventName, wrapped, false);
+      element.addEventListener(eventName, listener, false);
     else
-      element.attachEvent('on' + eventName, wrapped);
+      element.attachEvent('on' + eventName, listener);
     
     this._registry.push({
       _element:   element,
       _type:      eventName,
       _callback:  callback,
       _scope:     scope,
-      _handler:   wrapped
+      _listener:  listener
     });
-    
-    element = null;
-    wrapped = null;
   },
   
   detach: function(element, eventName, callback, scope) {
@@ -46,12 +43,13 @@ Acceptance.Event = Acceptance.Class({
         continue;
       
       if (register._element.removeEventListener)
-        register._element.removeEventListener(register._type, register._handler, false);
+        register._element.removeEventListener(register._type, register._listener, false);
       else
-        register._element.detachEvent('on' + register._type, register._handler);
+        register._element.detachEvent('on' + register._type, register._listener);
       
       register._element  = null;
       register._callback = null;
+      register._listener = null;
       register = null;
       
       this._registry.splice(i,1);
