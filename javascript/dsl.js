@@ -14,17 +14,18 @@ Acceptance.DSL = {
     requires: function(field, message) {
       var field = this._form.getField(field);
       field.setMessage(message);
-      return new Acceptance.DSL.Requirement(field);
+      return new Acceptance.DSL.Requirement(this, field);
     }
   }),
   
   Requirement: Acceptance.Class({
-    initialize: function(field) {
+    initialize: function(description, field) {
+      this._description = description;
       this._field = field;
     },
     
     requires: function() {
-      var proxy = new Acceptance.DSL.Description(this._field._form);
+      var proxy = this._description;
       return proxy.requires.apply(proxy, arguments);
     },
     
