@@ -26,7 +26,7 @@ Acceptance.Field = Acceptance.Class({
   },
   
   _hasInput: function() {
-    return this._input && Acceptance.Dom.exists(this._input);
+    return Acceptance.Dom.exists(this._input);
   },
   
   isValid: function() {

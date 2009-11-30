@@ -17,7 +17,7 @@ Acceptance.Form = Acceptance.Class({
   },
   
   _hasForm: function() {
-    return this._form && Acceptance.Dom.exists(this._form);
+    return Acceptance.Dom.exists(this._form);
   },
   
   _handleSubmit: function(form, event) {
