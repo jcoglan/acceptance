@@ -21,6 +21,26 @@ Acceptance.DSL = {
   Requirement: Acceptance.Class({
     initialize: function(field) {
       this._field = field;
+    },
+    
+    requires: function() {
+      var proxy = new Acceptance.DSL.Description(this._field._form);
+      return proxy.requires.apply(proxy, arguments);
+    },
+    
+    // TODO fix messages
+    toHaveLength: function(options, message) {
+      var min = options.minimum, max = options.maximum;
+      this._field.addTest(function(value) {
+        return (typeof options == 'number' && value.length != options &&
+                    [message || 'must contain exactly ' + options + ' characters']) ||
+                (min !== undefined && value.length < min &&
+                    [message || 'must contain at least ' + min + ' characters']) ||
+                (max !== undefined && value.length > max &&
+                    [message || 'must contain no more than ' + max + ' characters']) ||
+                true;
+      });
+      return this;
     }
   })
 };

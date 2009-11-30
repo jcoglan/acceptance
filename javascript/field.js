@@ -21,6 +21,10 @@ Acceptance.Field = Acceptance.Class({
     this._message = message;
   },
   
+  addTest: function(test) {
+    this._tests.push(test);
+  },
+  
   _hasInput: function() {
     return this._input && Acceptance.Dom.exists(this._input);
   },
