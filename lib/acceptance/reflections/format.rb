@@ -9,9 +9,8 @@ module Acceptance
         @macro = :format
       end
       
-      def pattern
-        @options[:with]
-      end
+      option_reader :with
+      alias :pattern :with
       
       def allow_nil?
         !!@options[:allow_nil]

@@ -44,7 +44,7 @@ module Acceptance
     def message_for(validation)
       method = "generate_#{validation.macro}_message"
       return __send__(method, validation) if respond_to?(method)
-      "#{ validation.field.to_s.humanize } #{ validation.message }"
+      "'#{ validation.field.to_s.humanize } #{ validation.message }'"
     end
     
     TEMPLATE = <<-JAVASCRIPT
@@ -60,6 +60,40 @@ module Acceptance
   end
   
   class DefaultGenerator < Generator
+    def rule_base(validation)
+      "Acceptance.form('#{ form_id }').requires(#{ field_name_for validation })"
+    end
+    
+    def field_name_for(validation)
+      "'#{ object_name }[#{ validation.field }]'"
+    end
+    
+    validate :acceptance do |validation|
+      "#{ rule_base validation }.toBeChecked(#{ message_for validation });"
+    end
+    
+    validate :confirmation do |validation|
+      <<-SCRIPT
+      Acceptance.form('#{ form_id }').
+      requires('#{ object_name }[#{ validation.field }_confirmation]').
+      toConfirm(#{ field_name_for validation }, #{ message_for validation });
+      SCRIPT
+    end
+    
+    validate :exclusion do |validation|
+      "#{ rule_base validation }.toBeNoneOf(#{ validation.in.to_a.inspect }, #{ message_for validation});"
+    end
+    
+    validate :inclusion do |validation|
+      "#{ rule_base validation }.toBeOneOf(#{ validation.in.to_a.inspect }, #{ message_for validation});"
+    end
+    
+    validate :format do |validation|
+      pattern = validation.pattern
+      flags = (pattern.options & Regexp::IGNORECASE).nonzero? ? 'i' : ''
+      "#{ rule_base validation }.toMatch(/#{ pattern.source }/#{ flags }, #{ message_for validation });"
+    end
+    
     validate :length do |validation|
       if validation.is
         value = validation.is
@@ -69,22 +103,16 @@ module Acceptance
         max = range ? range.max : validation.maximum
         value = "{" + [min && "minimum: #{min}", max && "maximum: #{max}"].compact.join(', ') + "}"
       end
-      <<-SCRIPT
-      Acceptance.form('#{ form_id }').requires('#{ object_name }[#{ validation.field }]').
-      toHaveLength(#{ value }, '#{ message_for validation }');
-      SCRIPT
+      "#{ rule_base validation }.toHaveLength(#{ value }, #{ message_for validation });"
     end
     
     validate :presence do |validation|
       <<-SCRIPT
       Acceptance.form('#{ form_id }').
-      requires('#{ object_name }[#{ validation.field }]', '#{ message_for validation }');
+      requires(#{ field_name_for validation }, #{ message_for validation });
       SCRIPT
     end
-    
-    message :presence do |validation|
-      "Please enter a #{ validation.field.to_s.humanize.downcase }"
-    end
   end
+  
 end
 

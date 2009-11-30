@@ -12,6 +12,14 @@ Acceptance = {
     }
   },
   
+  arrayIncludes: function(array, value) {
+    var i = array.length;
+    while (i--) {
+      if (array[i] === value) return true;
+    }
+    return false;
+  },
+  
   trim: function(string) {
     if (!string) return '';
     return string.replace(/^\s*/g, '').replace(/\s*$/g, '');

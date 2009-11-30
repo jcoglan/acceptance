@@ -29,17 +29,50 @@ Acceptance.DSL = {
       return proxy.requires.apply(proxy, arguments);
     },
     
-    // TODO fix messages
+    toBeChecked: function(message) {
+      var field = this._field;
+      field.addTest(function(value) {
+        var input = field.getInput();
+        return (value === input.value && input.checked) || [message];
+      });
+      return this;
+    },
+    
+    toBeOneOf: function(list, message) {
+      this._field.addTest(function(value) {
+        return Acceptance.arrayIncludes(list, value) || [message];
+      });
+      return this;
+    },
+    
+    toBeNoneOf: function(list, message) {
+      this._field.addTest(function(value) {
+        return !Acceptance.arrayIncludes(list, value) || [message];
+      });
+      return this;
+    },
+    
+    toConfirm: function(field, message) {
+      this._field.addTest(function(value, data) {
+        return (value === data[field]) || [message];
+      });
+      return this;
+    },
+    
     toHaveLength: function(options, message) {
       var min = options.minimum, max = options.maximum;
       this._field.addTest(function(value) {
-        return (typeof options == 'number' && value.length != options &&
-                    [message || 'must contain exactly ' + options + ' characters']) ||
-                (min !== undefined && value.length < min &&
-                    [message || 'must contain at least ' + min + ' characters']) ||
-                (max !== undefined && value.length > max &&
-                    [message || 'must contain no more than ' + max + ' characters']) ||
-                true;
+        return (typeof options === 'number' && value.length !== options && [message]) ||
+               (min !== undefined && value.length < min && [message]) ||
+               (max !== undefined && value.length > max && [message]) ||
+               true;
+      });
+      return this;
+    },
+    
+    toMatch: function(pattern, message) {
+      this._field.addTest(function(value) {
+        return pattern.test(value) || [message];
       });
       return this;
     }
