@@ -43,8 +43,10 @@ module Acceptance
     
     def message_for(validation)
       method = "generate_#{validation.macro}_message"
-      return __send__(method, validation) if respond_to?(method)
-      "'#{ validation.field.to_s.humanize } #{ validation.message }'"
+      message = respond_to?(method) ?
+                __send__(method, validation) :
+                "#{ validation.field.to_s.humanize } #{ validation.message }"
+      message.inspect
     end
     
     TEMPLATE = <<-JAVASCRIPT
