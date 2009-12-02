@@ -21,4 +21,13 @@ Feature: Generate JavaScript from Active Record validations
     """
     form('new_article').requires('article[title]').toHaveLength(12);
     """
+  
+  Scenario: Generate validation for uniqueness
+    Given the Article class requires "title" to be unique
+    When I go to the home page
+    Then I should see a form called "new_article"
+    And I should see a script called "new_article_validation" containing
+    """
+    form('new_article').requires('article[title]').toBeUnique();
+    """
 

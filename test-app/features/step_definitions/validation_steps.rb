@@ -12,6 +12,10 @@ Given /^I have specified a code generator$/ do
     validate :presence do |reflection|
       "form('#{form_id}').requires('#{object_name}[#{reflection.field}]');"
     end
+    
+    validate :uniqueness do |reflection|
+      "form('#{form_id}').requires('#{object_name}[#{reflection.field}]').toBeUnique();"
+    end
   }
 end
 
@@ -21,6 +25,10 @@ end
 
 Given /^the Article class requires "([^\"]*)" to be present$/ do |field|
   ::Article.validates_presence_of field
+end
+
+Given /^the Article class requires "([^\"]*)" to be unique$/ do |field|
+  ::Article.validates_uniqueness_of field
 end
 
 Then /^I should see a form called "([^\"]*)"$/ do |id|

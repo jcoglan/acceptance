@@ -10,8 +10,7 @@ module Acceptance
       end
       
       option_reader :minimum, :maximum, :is, :within, :in,
-                    :too_short, :too_long, :wrong_length,
-                    :message
+                    :too_short, :too_long, :wrong_length
       
       def allow_nil?
         !!@options[:allow_nil]

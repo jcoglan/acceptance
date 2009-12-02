@@ -10,7 +10,7 @@ module Acceptance
       end
       
       def allow_nil?
-        @options.has_key?(:allow_nil) ? @options[:allow_nil] : true
+        !@options.has_key?(:allow_nil) or @options[:allow_nil]
       end
       
       def accept
