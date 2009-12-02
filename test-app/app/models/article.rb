@@ -8,6 +8,6 @@ end
 class Article < ActiveRecord::Base
   extend Acceptance::ReflectsOnValidations
   
-  validates_presence_of :title
+  validates_length_of :title, :is => 6,:message => 'foom'
 end
 
