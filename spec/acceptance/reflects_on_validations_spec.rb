@@ -261,7 +261,7 @@ describe Acceptance::ReflectsOnValidations do
       end
     end
     
-    it "reflects on validates_presence_of :username" do
+    it "reflects on validates_uniqueness_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :uniqueness,
                                       :message => "You should have a unique name",
@@ -271,14 +271,14 @@ describe Acceptance::ReflectsOnValidations do
                                       :case_sensitive? => true
     end
     
-    it "reflects on validates_presence_of :email" do
+    it "reflects on validates_uniqueness_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                    :uniqueness,
                                    :message => nil,
                                    :allow_blank? => true
     end
     
-    it "reflects on validates_presence_of :password" do
+    it "reflects on validates_uniqueness_of :password" do
       reflect(:password).first.should reflect_validation_of :password,
                                       :uniqueness,
                                       :message => nil,
