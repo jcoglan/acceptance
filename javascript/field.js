@@ -37,10 +37,13 @@ Acceptance.Field = Acceptance.Class({
   },
   
   _validate: function(callback, scope) {
-    var tests    = this._tests.length ? this._tests : [this.klass._isPresent(this._message)],
+    var tests    = this._tests.slice(),
         formData = Acceptance.Dom.getValues(this._form.getForm()),
         value    = formData[this._fieldName],
         errors   = [];
+    
+    if (tests.length === 0 || !Acceptance.trim(value))
+      tests = [this.klass._isPresent(this._message)].concat(tests);
     
     var i = 0, n = tests.length, self = this;
 
