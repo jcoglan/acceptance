@@ -15,6 +15,7 @@ describe Acceptance::ReflectsOnValidations do
     it "reflects on validates_acceptance_of :terms" do
       reflect(:terms).first.should reflect_validation_of :terms,
                                    :acceptance,
+                                   :model => @class,
                                    :message => "Only on our terms",
                                    :allow_nil? => true,
                                    :accept => "1"

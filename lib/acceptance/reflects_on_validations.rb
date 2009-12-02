@@ -22,7 +22,7 @@ module Acceptance
         attr_names.each do |attribute|
           key = attribute.to_sym
           validations[key] ||= []
-          validations[key] << Reflections.create(validation_type, key, options)
+          validations[key] << Reflections.create(validation_type, self, key, options)
         end
       end
     end

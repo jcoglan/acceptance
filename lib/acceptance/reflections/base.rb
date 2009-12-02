@@ -2,7 +2,7 @@ module Acceptance
   module Reflections
     
     class Base
-      attr_reader :macro, :field
+      attr_reader :macro, :model, :field
       
       def self.option_reader(*fields)
         fields.each do |field|
@@ -10,7 +10,8 @@ module Acceptance
         end
       end
       
-      def initialize(field, options = {})
+      def initialize(model, field, options = {})
+        @model = model
         @field = field.to_sym
         @options = options
       end
@@ -21,8 +22,8 @@ module Acceptance
       end  
     end
     
-    def self.create(type, field, options)
-      const_get(type.gsub(/^(.)/) { $1.upcase }).new(field, options)
+    def self.create(type, model, field, options)
+      const_get(type.gsub(/^(.)/) { $1.upcase }).new(model, field, options)
     end
     
   end
