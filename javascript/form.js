@@ -1,5 +1,6 @@
 Acceptance.Form = Acceptance.Class({
   initialize: function(formId) {
+    this._numRequirements = 0;
     this._formId       = formId;
     this._requirements = {};
     this._invalid      = [];
@@ -21,15 +22,19 @@ Acceptance.Form = Acceptance.Class({
   },
   
   _handleSubmit: function(form, event) {
-    if (!this.isValid()) event.stopDefault();
+    event.stopDefault();
+    this.isValid(function(valid) { if (valid) form.submit() });
   },
   
-  isValid: function() {
-    var valid = true;
+  isValid: function(callback, scope) {
+    var valid = true, i = 0, n = this._numRequirements;
     Acceptance.each(this._requirements, function(name, field) {
-      if (!field.isValid()) valid = false;
+      field.isValid(function(fieldValid) {
+        if (!fieldValid) valid = false;
+        i += 1;
+        if (i === n) callback.call(scope, valid);
+      });
     });
-    return valid;
   },
   
   getField: function(field) {

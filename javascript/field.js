@@ -1,5 +1,6 @@
 Acceptance.Field = Acceptance.Class({
   initialize: function(form, fieldName, message) {
+    form._numRequirements += 1;
     this._form      = form;
     this._fieldName = fieldName;
     this._message   = message;
@@ -29,30 +30,37 @@ Acceptance.Field = Acceptance.Class({
     return Acceptance.Dom.exists(this._input);
   },
   
-  isValid: function() {
-    this._validate();
-    return !!this._valid;
+  isValid: function(callback, scope) {
+    this._validate(function() {
+      callback.call(scope, !!this._valid);
+    }, this);
   },
   
-  _validate: function() {
+  _validate: function(callback, scope) {
     var tests    = this._tests.length ? this._tests : [this.klass._isPresent(this._message)],
         formData = Acceptance.Dom.getValues(this._form.getForm()),
         value    = formData[this._fieldName],
         errors   = [];
     
+    var i = 0, n = tests.length, self = this;
+
     Acceptance.each(tests, function(test) {
-      var result = test(value, formData);
-      if (result === true) return;
-      errors = errors.concat(result);
+      test(value, formData, function(result) {
+        if (result instanceof Array) errors = errors.concat(result);
+
+        i += 1;
+        if (i < n) return;
+
+        self._valid = (errors.length === 0);
+        Acceptance.notifyClient(self, errors);
+        if (callback instanceof Function) callback.call(scope);
+      });
     });
-    
-    this._valid = (errors.length === 0);
-    Acceptance.notifyClient(this, errors);
   }
 }, {
   _isPresent: function(message) {
-    return function(value) {
-      return Acceptance.trim(value) ? true : [message];
+    return function(value, data, returns) {
+      returns( Acceptance.trim(value) ? true : [message] );
     }
   }
 });
