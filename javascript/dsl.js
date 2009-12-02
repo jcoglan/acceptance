@@ -31,37 +31,37 @@ Acceptance.DSL = {
     
     toBeChecked: function(message) {
       var field = this._field;
-      field.addTest(function(value, data, returns) {
+      field.addTest(function(returns, value) {
         var input = field.getInput();
-        returns( (value === input.value && input.checked) || [message] );
+        returns( (returns, value === input.value && input.checked) || [message] );
       });
       return this;
     },
     
     toBeOneOf: function(list, message) {
-      this._field.addTest(function(value, data, returns) {
+      this._field.addTest(function(returns, value) {
         returns( Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
     },
     
     toBeNoneOf: function(list, message) {
-      this._field.addTest(function(value, data, returns) {
+      this._field.addTest(function(returns, value) {
         returns( !Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
     },
     
     toConfirm: function(field, message) {
-      this._field.addTest(function(value, data, returns) {
-        returns( (value === data[field]) || [message] );
+      this._field.addTest(function(returns, value, data) {
+        returns( (returns, value === data[field]) || [message] );
       });
       return this;
     },
     
     toHaveLength: function(options, message) {
       var min = options.minimum, max = options.maximum;
-      this._field.addTest(function(value, data, returns) {
+      this._field.addTest(function(returns, value) {
         returns ( (typeof options === 'number' && value.length !== options && [message]) ||
                   (min !== undefined && value.length < min && [message]) ||
                   (max !== undefined && value.length > max && [message]) ||
@@ -72,8 +72,8 @@ Acceptance.DSL = {
     },
     
     toMatch: function(pattern, message) {
-      this._field.addTest(function(value, data, returns) {
-        returns( pattern.test(value) || [message] );
+      this._field.addTest(function(returns, value) {
+        returns( pattern.test(returns, value) || [message] );
       });
       return this;
     }

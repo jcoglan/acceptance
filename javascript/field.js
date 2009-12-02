@@ -45,7 +45,7 @@ Acceptance.Field = Acceptance.Class({
     var i = 0, n = tests.length, self = this;
 
     Acceptance.each(tests, function(test) {
-      test(value, formData, function(result) {
+      test(function(result) {
         if (result instanceof Array) errors = errors.concat(result);
 
         i += 1;
@@ -54,12 +54,12 @@ Acceptance.Field = Acceptance.Class({
         self._valid = (errors.length === 0);
         Acceptance.notifyClient(self, errors);
         if (callback instanceof Function) callback.call(scope);
-      });
+      }, value, formData);
     });
   }
 }, {
   _isPresent: function(message) {
-    return function(value, data, returns) {
+    return function(returns, value) {
       returns( Acceptance.trim(value) ? true : [message] );
     }
   }
