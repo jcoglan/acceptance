@@ -38,7 +38,7 @@ Acceptance.DSL = {
       var field = this._field;
       return this.addTest(function(returns, value) {
         var input = field.getInput();
-        returns( (returns, value === input.value && input.checked) || [message] );
+        returns( (value === input.value && input.checked) || [message] );
       });
     },
     
@@ -56,7 +56,7 @@ Acceptance.DSL = {
     
     toConfirm: function(field, message) {
       return this.addTest(function(returns, value, data) {
-        returns( (returns, value === data[field]) || [message] );
+        returns( (value === data[field]) || [message] );
       });
     },
     
@@ -73,7 +73,7 @@ Acceptance.DSL = {
     
     toMatch: function(pattern, message) {
       return this.addTest(function(returns, value) {
-        returns( pattern.test(returns, value) || [message] );
+        returns( pattern.test(value) || [message] );
       });
     }
   })
