@@ -16,10 +16,7 @@ module Acceptance
         @options = options
       end
       
-      def message
-        msg = @options[:message]
-        msg && msg.dup
-      end  
+      option_reader :message, :on
     end
     
     def self.create(type, model, field, options)

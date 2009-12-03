@@ -30,13 +30,13 @@ Feature: Generate JavaScript from Active Record validations
     """
     form('new_article').requires('article[title]').toBeUnique();
     """
-
-  Scenario: Generate validation for uniqueness
-    Given the Article class requires "title" to be unique
+  
+  Scenario: Don't generate 'on update' validation for new objects
+    Given the Article class requires "title" to have length 3 on "update"
     When I go to the home page
     Then I should see a form called "new_article"
-    And I should see a script called "new_article_validation" containing
+    And I should not see a script called "new_article_validation" containing
     """
-    form('new_article').requires('article[title]').toBeUnique();
+    form('new_article').requires('article[title]').toHaveLength(3);
     """
 

@@ -23,6 +23,10 @@ Given /^the Article class requires "([^\"]*)" to have length (\d+)$/ do |field, 
   ::Article.validates_length_of field, :is => length.to_i
 end
 
+Given /^the Article class requires "([^\"]*)" to have length (\d+) on "([^\"]*)"$/ do |field, length, event|
+  ::Article.validates_length_of field, :is => length.to_i, :on => event.to_sym
+end
+
 Given /^the Article class requires "([^\"]*)" to be present$/ do |field|
   ::Article.validates_presence_of field
 end
@@ -35,8 +39,11 @@ Then /^I should see a form called "([^\"]*)"$/ do |id|
   response.should have_tag('form#' + id)
 end
 
-
 Then /^I should see a script called "([^\"]*)" containing$/ do |id, string|
   Then "I should see \"#{ string }\" within \"script\##{ id }\""
+end
+
+Then /^I should not see a script called "([^\"]*)" containing$/ do |id, string|
+  Then "I should not see \"#{ string }\" within \"script\##{ id }\""
 end
 

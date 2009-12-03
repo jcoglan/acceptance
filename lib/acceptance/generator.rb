@@ -36,8 +36,12 @@ module Acceptance
     end
     
     def generate_code_for(validation)
+      return "" if validation.on == :update and @object.new_record?
+      return "" if validation.on == :create and not @object.new_record?
+      
       method = "generate_#{validation.macro}_validation"
       return "" unless respond_to?(method)
+      
       __send__(method, validation)
     end
     
