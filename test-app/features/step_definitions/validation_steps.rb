@@ -3,6 +3,11 @@ Given /^there is an Article class$/ do
   ::Article.extend(Acceptance::ReflectsOnValidations)
 end
 
+Given /^the Acceptance generator is disabled$/ do
+  Acceptance::Generator.disable!
+end
+
+
 Given /^I have specified a code generator$/ do
   Acceptance.generator = Class.new(Acceptance::Generator) {
     validate :length do |reflection|
@@ -39,11 +44,15 @@ Then /^I should see a form called "([^\"]*)"$/ do |id|
   response.should have_tag('form#' + id)
 end
 
+Then /^I should not see a script called "([^\"]*)"$/ do |id|
+  response.should_not have_selector("script\##{id}")
+end
+
 Then /^I should see a script called "([^\"]*)" containing$/ do |id, string|
   Then "I should see \"#{ string }\" within \"script\##{ id }\""
 end
 
-Then /^I should not see a script called "([^\"]*)" containing$/ do |id, string|
+Then /^I should see a script called "([^\"]*)" not containing$/ do |id, string|
   Then "I should not see \"#{ string }\" within \"script\##{ id }\""
 end
 

@@ -35,8 +35,15 @@ Feature: Generate JavaScript from Active Record validations
     Given the Article class requires "title" to have length 3 on "update"
     When I go to the home page
     Then I should see a form called "new_article"
-    And I should not see a script called "new_article_validation" containing
+    And I should see a script called "new_article_validation" not containing
     """
     form('new_article').requires('article[title]').toHaveLength(3);
     """
+  
+  Scenario: Don't generate any code if disabled
+    Given the Article class requires "title" to be present
+    And the Acceptance generator is disabled
+    When I go to the home page
+    Then I should see a form called "new_article"
+    And I should not see a script called "new_article_validation"
 

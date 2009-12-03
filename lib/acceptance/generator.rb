@@ -1,6 +1,14 @@
 module Acceptance
   class Generator
     
+    def self.disable!
+      @disabled = true
+    end
+    
+    def self.disabled?
+      !!@disabled
+    end
+    
     def self.validate(macro, &block)
       define_method("generate_#{macro}_validation", &block)
     end
@@ -24,6 +32,7 @@ module Acceptance
     end
     
     def generate_script
+      return "" if Generator.disabled?
       ERB.new(TEMPLATE, nil, '-').result(binding)
     end
     
