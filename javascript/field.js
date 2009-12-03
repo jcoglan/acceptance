@@ -3,7 +3,6 @@ Acceptance.Field = Acceptance.Class({
     form._numRequirements += 1;
     this._form      = form;
     this._fieldName = fieldName;
-    this._message   = message;
     this._tests     = [];
     this.getInput();
   },
@@ -19,7 +18,7 @@ Acceptance.Field = Acceptance.Class({
   
   setMessage: function(message) {
     if (!message) return;
-    this._message = message;
+    this.addTest(this.klass._isPresent(message));
   },
   
   addTest: function(test) {
@@ -41,9 +40,6 @@ Acceptance.Field = Acceptance.Class({
         formData = Acceptance.Dom.getValues(this._form.getForm()),
         value    = formData[this._fieldName],
         errors   = [];
-    
-    if (tests.length === 0 || !Acceptance.trim(value))
-      tests = [this.klass._isPresent(this._message)].concat(tests);
     
     var i = 0, n = tests.length, self = this;
 
