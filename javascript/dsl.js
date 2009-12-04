@@ -35,29 +35,25 @@ Acceptance.DSL = {
       return proxy.requires.apply(proxy, arguments);
     },
     
-    addTest: function(tester) {
-      this._field.addTest(tester);
-      return this;
-    },
-    
     toBeChecked: function(message) {
-      var field = this._field;
-      this._field.addTest(function(returns, value) {
-        var input = field.getInput();
+      this._field.addTest(function(returns, validation) {
+        var input = validation.input;
         returns( (value === input.value && input.checked) || [message] );
       });
       return this;
     },
     
     toBeOneOf: function(list, message) {
-      this._field.addTest(function(returns, value) {
+      this._field.addTest(function(returns, validation) {
+        var value = validation.value;
         returns( Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
     },
     
     toBeNoneOf: function(list, message) {
-      this._field.addTest(function(returns, value) {
+      this._field.addTest(function(returns, validation) {
+        var value = validation.value;
         returns( !Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
@@ -68,7 +64,9 @@ Acceptance.DSL = {
         if (this._field.isTouched()) this._field.validate();
       }, this);
       
-      this._field.addTest(function(returns, value, data) {
+      this._field.addTest(function(returns, validation) {
+        var value = validation.value,
+            data  = validation.formData;
         returns( (value === data[field]) || [message] );
       });
       return this;
@@ -76,7 +74,8 @@ Acceptance.DSL = {
     
     toHaveLength: function(options, message) {
       var min = options.minimum, max = options.maximum;
-      this._field.addTest(function(returns, value) {
+      this._field.addTest(function(returns, validation) {
+        var value = validation.value;
         returns ( (typeof options === 'number' && value.length !== options && [message]) ||
                   (min !== undefined && value.length < min && [message]) ||
                   (max !== undefined && value.length > max && [message]) ||
@@ -87,7 +86,8 @@ Acceptance.DSL = {
     },
     
     toMatch: function(pattern, message) {
-      this._field.addTest(function(returns, value) {
+      this._field.addTest(function(returns, validation) {
+        var value = validation.value;
         returns( pattern.test(value) || [message] );
       });
       return this;
@@ -100,7 +100,7 @@ Acceptance.extend(Acceptance, {
   
   macro: function(name, tester) {
     Acceptance.DSL.Requirement.prototype[name] = function() {
-      this.addTest(tester.apply(this, arguments));
+      this._field.addTest(tester.apply(this, arguments));
       return this;
     };
   },
@@ -109,17 +109,11 @@ Acceptance.extend(Acceptance, {
     this._validationHook = [block, context];
   },
   
-  notifyClient: function(field, errors) {
+  notifyClient: function(validation) {
     var callback = this._validationHook;
     if (!callback) return;
     
-    callback[0].call(callback[1], {
-      form:   field._form.getForm(),
-      input:  field.getInput(),
-      name:   field._fieldName,
-      valid:  field._valid,
-      errors: errors.slice()
-    });
+    callback[0].call(callback[1], validation);
   }
 });
 

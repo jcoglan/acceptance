@@ -50,34 +50,52 @@ Acceptance.Field = Acceptance.Class({
   },
   
   validate: function(callback, scope) {
-    var tests    = this._tests.slice(),
-        formData = Acceptance.Dom.getValues(this._form.getForm()),
-        value    = formData[this._fieldName],
-        errors   = [];
+    var validation = this._generateValidationObject(),
+        tests      = this._tests.slice();
     
     var i = 0, n = tests.length, self = this;
     if (n === 0 && (callback instanceof Function)) return callback.call(scope);
-
+    
     Acceptance.each(tests, function(test) {
       test(function(result) {
-        if (result instanceof Array) errors = errors.concat(result);
+        if (result instanceof Array) Acceptance.each(result, function(error) {
+          validation.errors.push(error);
+        });
 
         i += 1;
         if (i < n) return;
 
-        self._valid = (errors.length === 0);
-        Acceptance.notifyClient(self, errors);
+        self._valid = (validation.errors.length === 0);
+        validation.valid = self._valid;
+        
+        Acceptance.notifyClient(validation);
+        
         if (callback instanceof Function) callback.call(scope);
-      }, value, formData, errors);
+      }, validation);
     });
     
     Acceptance.each(this._callbacks, function(callback) {
       callback[0].call(callback[1]);
     });
+  },
+  
+  _generateValidationObject: function() {
+    var formData = Acceptance.Dom.getValues(this._form.getForm()),
+        value    = formData[this._fieldName];
+    
+    return {
+      form:     this._form.getForm(),
+      input:    this.getInput(),
+      name:     this._fieldName,
+      value:    value,
+      formData: formData,
+      errors:   []
+    };
   }
 }, {
   _isPresent: function(message) {
-    return function(returns, value) {
+    return function(returns, validation) {
+      var value = validation.value;
       returns( Acceptance.trim(value) ? true : [message] );
     }
   }

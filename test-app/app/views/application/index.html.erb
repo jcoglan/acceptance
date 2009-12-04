@@ -32,9 +32,17 @@
     });
     
     Acceptance.macro('toValidateSlowly', function(message) {
-      return function(returns, value, formData, errors) {
+      return function(returns, validation) {
+        var value  = validation.value,
+            input  = validation.input,
+            errors = validation.errors;
+        
         if (errors.length > 0) return returns(true);
+        
+        input.value = 'Validating...';
+        
         setTimeout(function() {
+          input.value = value;
           returns( (value === 'script') ? true : [message] );
         }, 2000);
       };
