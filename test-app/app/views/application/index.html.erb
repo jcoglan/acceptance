@@ -9,6 +9,8 @@
   
     <% validated_form_for(@article) do |f| %>
       <%= field f, :title %>
+      <%= field f, :password %>
+      <%= field f, :password_confirmation %>
       <%= submit_tag "Save" %>
     <% end %>
     
@@ -28,6 +30,18 @@
         errorElem.innerHTML = field.errors[0];
       }
     });
+    
+    Acceptance.macro('toValidateSlowly', function(message) {
+      return function(returns, value, formData, errors) {
+        if (errors.length > 0) return returns(true);
+        setTimeout(function() {
+          returns( (value === 'script') ? true : [message] );
+        }, 2000);
+      };
+    });
+    
+    Acceptance.form('new_article').
+    requires('article[title]').toValidateSlowly('Too slow!');
     </script>
   
   </body>

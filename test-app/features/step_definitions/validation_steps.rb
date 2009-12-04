@@ -1,6 +1,8 @@
 Given /^there is an Article class$/ do
-  ::Article = Class.new(ActiveRecord::Base)
-  ::Article.extend(Acceptance::ReflectsOnValidations)
+  ::Article = Class.new(ActiveRecord::Base) do
+    extend(Acceptance::ReflectsOnValidations)
+    attr_accessor :password, :password_confirmation
+  end
 end
 
 Given /^the Acceptance generator is disabled$/ do
