@@ -13,7 +13,7 @@ Acceptance.Field = Acceptance.Class({
     if (this._hasInput()) return this._input;
     
     this._input = Acceptance.Dom.getInputs(this._form.getForm(), this._fieldName)[0];
-    Acceptance.Event.on(this._input, 'blur', this.validate, this);
+    Acceptance.Event.on(this._input, 'blur', function() { this.validate('blur') }, this);
     
     Acceptance.Event.on(this._input, 'focus', function() {
       this._touched = true;
@@ -43,14 +43,14 @@ Acceptance.Field = Acceptance.Class({
     return Acceptance.Dom.exists(this._input);
   },
   
-  isValid: function(callback, scope) {
-    this.validate(function() {
+  isValid: function(eventType, callback, scope) {
+    this.validate(eventType, function() {
       callback.call(scope, !!this._valid);
     }, this);
   },
   
-  validate: function(callback, scope) {
-    var validation = this._generateValidationObject(),
+  validate: function(eventType, callback, scope) {
+    var validation = this._generateValidationObject(eventType),
         tests      = this._tests.slice();
     
     var i = 0, n = tests.length, self = this;
@@ -59,14 +59,13 @@ Acceptance.Field = Acceptance.Class({
     Acceptance.each(tests, function(test) {
       test(function(result) {
         if (result instanceof Array) Acceptance.each(result, function(error) {
-          validation.errors.push(error);
+          validation.addError(error);
         });
 
         i += 1;
         if (i < n) return;
 
-        self._valid = (validation.errors.length === 0);
-        validation.valid = self._valid;
+        self._valid = validation.isValid();
         
         Acceptance.notifyClient(validation);
         
@@ -79,23 +78,22 @@ Acceptance.Field = Acceptance.Class({
     });
   },
   
-  _generateValidationObject: function() {
+  _generateValidationObject: function(eventType) {
     var formData = Acceptance.Dom.getValues(this._form.getForm()),
         value    = formData[this._fieldName];
     
-    return {
-      form:     this._form.getForm(),
-      input:    this.getInput(),
-      name:     this._fieldName,
-      value:    value,
-      formData: formData,
-      errors:   []
-    };
+    return Acceptance.Validation.create({
+      _form:      this._form.getForm(),
+      _input:     this.getInput(),
+      _value:     value,
+      _data:      formData,
+      _eventType: eventType
+    });
   }
 }, {
   _isPresent: function(message) {
     return function(returns, validation) {
-      var value = validation.value;
+      var value = validation.getValue();
       returns( Acceptance.trim(value) ? true : [message] );
     }
   }

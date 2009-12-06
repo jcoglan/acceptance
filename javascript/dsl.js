@@ -37,7 +37,7 @@ Acceptance.DSL = {
     
     toBeChecked: function(message) {
       this._field.addTest(function(returns, validation) {
-        var input = validation.input;
+        var input = validation.getInput();
         returns( (value === input.value && input.checked) || [message] );
       });
       return this;
@@ -45,7 +45,7 @@ Acceptance.DSL = {
     
     toBeOneOf: function(list, message) {
       this._field.addTest(function(returns, validation) {
-        var value = validation.value;
+        var value = validation.getValue();
         returns( Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
@@ -53,7 +53,7 @@ Acceptance.DSL = {
     
     toBeNoneOf: function(list, message) {
       this._field.addTest(function(returns, validation) {
-        var value = validation.value;
+        var value = validation.getValue();
         returns( !Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
@@ -61,13 +61,12 @@ Acceptance.DSL = {
     
     toConfirm: function(field, message) {
       this._description.onChange(field, function() {
-        if (this._field.isTouched()) this._field.validate();
+        if (this._field.isTouched()) this._field.validate('change');
       }, this);
       
       this._field.addTest(function(returns, validation) {
-        var value = validation.value,
-            data  = validation.formData;
-        returns( (value === data[field]) || [message] );
+        var value = validation.getValue();
+        returns( (value === validation.get(field)) || [message] );
       });
       return this;
     },
@@ -75,7 +74,7 @@ Acceptance.DSL = {
     toHaveLength: function(options, message) {
       var min = options.minimum, max = options.maximum;
       this._field.addTest(function(returns, validation) {
-        var value = validation.value;
+        var value = validation.getValue();
         returns ( (typeof options === 'number' && value.length !== options && [message]) ||
                   (min !== undefined && value.length < min && [message]) ||
                   (max !== undefined && value.length > max && [message]) ||
@@ -87,7 +86,7 @@ Acceptance.DSL = {
     
     toMatch: function(pattern, message) {
       this._field.addTest(function(returns, validation) {
-        var value = validation.value;
+        var value = validation.getValue();
         returns( pattern.test(value) || [message] );
       });
       return this;

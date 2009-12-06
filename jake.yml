@@ -19,5 +19,6 @@ packages:
     - event
     - form
     - field
+    - validation
     - dsl
 

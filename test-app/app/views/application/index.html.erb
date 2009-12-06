@@ -16,28 +16,29 @@
     
     <script type="text/javascript">
     Acceptance.onValidation(function(field) {
-      var input     = field.input,
+      var input     = field.getInput(),
           container = input.parentNode,
           errorElem = container.getElementsByTagName('span')[0];
       
-      if (field.valid) {
+      if (field.isValid()) {
         if (errorElem) errorElem.parentNode.removeChild(errorElem);
       } else {
         if (!errorElem) {
           errorElem = document.createElement('span');
           container.appendChild(errorElem);
         }
-        errorElem.innerHTML = field.errors[0];
+        errorElem.innerHTML = field.getErrorMessages()[0];
       }
     });
     
     Acceptance.macro('toValidateSlowly', function(message) {
       return function(returns, validation) {
-        var value  = validation.value,
-            input  = validation.input,
-            errors = validation.errors;
+        var value  = validation.getValue(),
+            input  = validation.getInput();
         
-        if (errors.length > 0) return returns(true);
+        if (!validation.isValid() ||
+            validation.getEventType() === 'submit')
+          return returns(true);
         
         input.value = 'Validating...';
         

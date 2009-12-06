@@ -23,13 +23,13 @@ Acceptance.Form = Acceptance.Class({
   
   _handleSubmit: function(form, event) {
     event.stopDefault();
-    this.isValid(function(valid) { if (valid) form.submit() });
+    this.isValid('submit', function(valid) { if (valid) form.submit() });
   },
   
-  isValid: function(callback, scope) {
+  isValid: function(eventType, callback, scope) {
     var valid = true, i = 0, n = this._numRequirements;
     Acceptance.each(this._requirements, function(name, field) {
-      field.isValid(function(fieldValid) {
+      field.isValid(eventType, function(fieldValid) {
         if (!fieldValid) valid = false;
         i += 1;
         if (i === n) callback.call(scope, valid);
@@ -42,6 +42,7 @@ Acceptance.Form = Acceptance.Class({
             this._requirements[field] ||
             new Acceptance.Field(this, field);
   }
+  
 }, {
   _registry: {},
   
