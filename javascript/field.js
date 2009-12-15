@@ -17,6 +17,7 @@ Acceptance.Field = Acceptance.Class({
     
     Acceptance.Event.on(this._input, 'focus', function() {
       this._touched = true;
+      this._cancelValidation();
     }, this);
     
     return this._input;
@@ -50,14 +51,21 @@ Acceptance.Field = Acceptance.Class({
   },
   
   validate: function(eventType, callback, scope) {
-    var validation = this._generateValidationObject(eventType),
-        tests      = this._tests.slice();
+    this._cancelValidation();
     
-    var i = 0, n = tests.length, self = this;
-    if (n === 0 && (callback instanceof Function)) return callback.call(scope);
+    var tests = this._tests.slice(),
+        i     = 0,
+        n     = tests.length,
+        self  = this;
+    
+    if (n === 0) return (callback instanceof Function) && callback.call(scope);
+    
+    var validation = this._currentValidation =
+        this._generateValidationObject(eventType);
     
     Acceptance.each(tests, function(test) {
       test(function(result) {
+        if (validation.isCancelled()) return;
         if (result === null) validation.indeterminate();
         
         if (result instanceof Array) Acceptance.each(result, function(error) {
@@ -68,16 +76,26 @@ Acceptance.Field = Acceptance.Class({
         if (i < n) return;
 
         self._valid = validation.isValid();
+        self._notifyObservers(validation, callback, scope);
         
-        Acceptance.each(self._callbacks, function(callback) {
-          callback[0].call(callback[1], validation);
-        });
-        
-        Acceptance.notifyClient(validation);
-        
-        if (callback instanceof Function) callback.call(scope);
       }, validation);
     });
+  },
+  
+  _notifyObservers: function(validation, callback, scope) {
+    Acceptance.each(this._callbacks, function(callback) {
+      callback[0].call(callback[1], validation);
+    });
+    
+    Acceptance.notifyClient(validation);
+    
+    if (callback instanceof Function) callback.call(scope);
+  },
+  
+  _cancelValidation: function() {
+    if (!this._currentValidation) return;
+    this._currentValidation.cancel();
+    delete this._currentValidation;
   },
   
   _generateValidationObject: function(eventType) {
@@ -92,6 +110,7 @@ Acceptance.Field = Acceptance.Class({
       _eventType: eventType
     });
   }
+  
 }, {
   _isPresent: function(message) {
     return function(returns, validation) {

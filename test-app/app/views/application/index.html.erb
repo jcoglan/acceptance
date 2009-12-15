@@ -20,10 +20,7 @@
           container = input.parentNode,
           errorElem = container.getElementsByTagName('span')[0];
       
-      if (field.isIndeterminate()) {
-        if (errorElem) errorElem.parentNode.removeChild(errorElem);
-      }
-      else if (field.isValid()) {
+      if (field.isIndeterminate() || field.isValid()) {
         if (errorElem) errorElem.parentNode.removeChild(errorElem);
       } else {
         if (!errorElem) {
@@ -45,10 +42,17 @@
         
         input.value = 'Validating...';
         
-        setTimeout(function() {
+        var cancel = function() {
           input.value = value;
+          cancel = function() {};
+        };
+        
+        validation.onCancel(cancel);
+        
+        setTimeout(function() {
+          cancel();
           returns( (value === 'script') ? true : [message] );
-        }, 2000);
+        }, 5000);
       };
     });
     
