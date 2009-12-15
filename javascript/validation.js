@@ -36,6 +36,14 @@ Acceptance.Validation = Acceptance.Class({
   
   getErrorMessages: function() {
     return this._errors.slice();
+  },
+  
+  indeterminate: function() {
+    this._indeterminate = true;
+  },
+  
+  isIndeterminate: function() {
+    return !!this._indeterminate;
   }
   
 }, {

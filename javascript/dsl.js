@@ -17,9 +17,9 @@ Acceptance.DSL = {
       return new Acceptance.DSL.Requirement(this, field);
     },
     
-    onChange: function(field, callback, scope) {
+    onValidation: function(field, callback, scope) {
       var field = this._form.getField(field);
-      field.onChange(callback, scope);
+      field.onValidation(callback, scope);
       return this;
     }
   }),
@@ -60,11 +60,15 @@ Acceptance.DSL = {
     },
     
     toConfirm: function(field, message) {
-      this._description.onChange(field, function() {
+      var targetValid = false;
+      
+      this._description.onValidation(field, function(validation) {
+        targetValid = validation.isValid();
         if (this._field.isTouched()) this._field.validate('change');
       }, this);
       
       this._field.addTest(function(returns, validation) {
+        if (!targetValid) return returns( null );
         var value = validation.getValue();
         returns( (value === validation.get(field)) || [message] );
       });

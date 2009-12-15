@@ -20,7 +20,10 @@
           container = input.parentNode,
           errorElem = container.getElementsByTagName('span')[0];
       
-      if (field.isValid()) {
+      if (field.isIndeterminate()) {
+        if (errorElem) errorElem.parentNode.removeChild(errorElem);
+      }
+      else if (field.isValid()) {
         if (errorElem) errorElem.parentNode.removeChild(errorElem);
       } else {
         if (!errorElem) {

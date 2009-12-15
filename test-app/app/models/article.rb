@@ -11,6 +11,7 @@ class Article < ActiveRecord::Base
   
   validates_presence_of :title, :message => 'must not be blank'
   validates_length_of :title, :is => 6,:message => 'must be 6 characters'
+  validates_format_of :password, :with => /^[a-z]+$/i, :message => 'must only contain letters'
   validates_confirmation_of :password, :message => 'must match password'
 end
 

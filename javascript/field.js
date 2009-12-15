@@ -31,7 +31,7 @@ Acceptance.Field = Acceptance.Class({
     this.addTest(this.klass._isPresent(message));
   },
   
-  onChange: function(callback, scope) {
+  onValidation: function(callback, scope) {
     this._callbacks.push([callback, scope]);
   },
   
@@ -58,6 +58,8 @@ Acceptance.Field = Acceptance.Class({
     
     Acceptance.each(tests, function(test) {
       test(function(result) {
+        if (result === null) validation.indeterminate();
+        
         if (result instanceof Array) Acceptance.each(result, function(error) {
           validation.addError(error);
         });
@@ -67,14 +69,14 @@ Acceptance.Field = Acceptance.Class({
 
         self._valid = validation.isValid();
         
+        Acceptance.each(self._callbacks, function(callback) {
+          callback[0].call(callback[1], validation);
+        });
+        
         Acceptance.notifyClient(validation);
         
         if (callback instanceof Function) callback.call(scope);
       }, validation);
-    });
-    
-    Acceptance.each(this._callbacks, function(callback) {
-      callback[0].call(callback[1]);
     });
   },
   
