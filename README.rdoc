@@ -1,0 +1,296 @@
+= Acceptance
+
+Acceptance is a validation toolkit for JavaScript and Rails. The JavaScript API
+can be used standalone, but the plugin also provides a generator that produces
+client-side validation code from Rails model validations automatically. You just
+need to write a JavaScript hook to update your app's UI when a validation runs,
+and Acceptance handles all the ugly DOM and validation logic for you.
+
+
+== Installation
+
+Install using Rails or use a Git submodule:
+
+  script/plugin install git://github.com/jcoglan/acceptance.git
+
+  git submodule add git://github.com/jcoglan/acceptance.git vendor/plugins/acceptance
+
+After installing or updating, run this task to update the JavaScript library:
+
+  rake acceptance:install
+
+You'll need to install the +jake+ gem in order to build the JavaScript. Remember
+to include <tt>acceptance.js</tt> in your pages before any forms you want validated.
+
+You'll also need to add the following mixins to +ApplicationHelper+ and any models
+you want to generate client-side validations for:
+
+  module ApplicationHelper
+    include Acceptance::FormHelper
+  end
+  
+  class User < ActiveRecord::Base
+    extend Acceptance::ReflectsOnValidations
+  end
+  
+
+== JavaScript API
+
+The first thing you'll need is a hook that tells Acceptance what to do when a
+field is validated. This is specified as follows:
+
+  Acceptance.onValidation(function(validation) {
+    // handle validation result
+  });
+
++validation+ is an object that represents the validation that has been run.
+Validations are run when a field loses focus, and when an entire form is submitted.
+The object provides the following methods for getting information about the
+validation, which you can use to update your UI:
+
+
+=== The +Validation+ object
+
+<b><tt>validation.getForm()</tt></b>: returns a DOM reference to the +form+ element
+hosting the validated field.
+
+<b><tt>validation.getInput()</tt></b>: returns a DOM reference to the +input+, +select+
+or +textarea+ that was validated.
+
+<b><tt>validation.getValue()</tt></b>: returns the validated field's current value.
+
+<b><tt>validation.get(field)</tt></b>: returns the current value of the field named by
++field+ from the current form.
+
+<b><tt>validation.getEventType()</tt></b>: returns the type of DOM event that triggered
+the validation, e.g. <tt>'blur'</tt> or <tt>'submit'</tt>.
+
+<b><tt>validation.isValid()</tt></b>: returns +true+ iff the validated field satisfies
+all its registered validations.
+
+<b><tt>validation.getErrorMessages()</tt></b>: returns an array of error messages for
+the field. If the field is valid, this array is empty.
+
+<b><tt>validation.isIndeterminate()</tt></b>: returns +true+ iff the field is neither
+valid nor invalid. For example, a confirmation field is considered indeterminate
+if the field it is confirming is invalid, even if the two field have the same
+value.
+
+There are also a few methods that you should not use during the +onValidation+
+callback but which are useful when writing your own validation macros (see below):
+
+<b><tt>validation.addError(message)</tt></b>: adds the given error message to the field.
+This does not update the UI, it simply adds an error to the validation object.
+The field becomes invalid as soon as it has errors.
+
+<b><tt>validation.isCancelled()</tt></b>: returns +true+ iff the validation has been
+cancelled.
+
+<b><tt>validation.onCancel(callback, context)</tt></b>: defines a callback function
+to execute if the validation gets cancelled. This is useful for asynchronous
+validations where you're showing a spinner while the validation runs and you
+need to remove the spinner when the validation stops.
+
+
+=== Defining validation rules
+
+Rules are set up using a simple DSL that is loosely based on the Rails
+validation framework. The most simple rule specified that a field is required,
+for example:
+
+  Acceptance.form('signup').requires('username', 'Username must not be blank');
+
+This states that the form with ID +signup+ requires the +username+ field not
+to be blank. Note how the DSL only lets you deal with form data; you don't
+need to set up event handlers or any other DOM stuff, Acceptance deals with
+this for you. If a form is submitted with invalid data, Acceptance will cancel
+the submission event.
+
+More specific rules are written by chaining methods after the +requires+ call,
+for example:
+
+  Acceptance.form('signup').requires('age').toBeNumeric();
+
+These chained methods are called 'macros', and can be defined by the developer.
+Acceptance includes a set of built-in macros for performing common validations:
+
+<b><tt>toBeChecked(message)</tt></b>: means that the named checkbox must be checked,
+or else the given error message will be used.
+
+<b><tt>toBeOneOf(list, message)</tt></b>: means the named field's value should be
+one of the values in the given +list+, or else the given error message will
+be used.
+
+<b><tt>toBeNoneOf(list, message)</tt></b>: means the named field's value should not
+be one of the values in the given +list+, or else the given error message will
+be used.
+
+<b><tt>toConfirm(target, message)</tt></b>: means the named field's value should
+equal the value of the field named by +target+, or else the given error
+message will be used. The confirmation field will be validated whenever
+it or its target are modified.
+
+<b><tt>toHaveLength(options, message)</tt></b>: TODO
+
+<b><tt>toMatch(pattern, message)</tt></b>: means the named field's value should
+match the regular expression +pattern+, or else the given error message
+will be used.
+
+
+=== Custom validation macros
+
+You can define your own DSL macros to perform validations not built into
+Acceptance. For example, say we want to validate uniqueness by making
+an Ajax call to the server to find out if an object with the given value
+for the field already exists. The API we want is this:
+
+  Acceptance.form('new_post').requires('post[title]').toBeUnique({
+    model:      'Post',
+    attribute:  'title'
+  }, 'Title must be unique');
+
+The implementation of this should call the server and find out whether
+a +Post+ model already exists whose +title+ attribute is that entered
+by the user. We implement this as follows. The outer function must take
+the parameters supplied using the DSL, and return an inner function that
+performs the validation.
+
+The inner function should take a continuation and a validation object
+(see above). Using continuation-passing style allows Acceptance to support
+async validations such as those involving Ajax. The continuation should
+be called with +true+ if the field is valid, +null+ if it is indeterminate,
+and an array of error messages if it is invalid. Here's our uniqueness
+macro:
+
+  Acceptance.macro('toBeUnique', function(settings, message) {
+    return function(returns, validation) {
+      var value = validation.getValue(),
+          input = validation.getInput();
+      
+      // Add a class to the DOM to show the field is being validated
+      var container = jQuery(input).parent();
+      container.addClass('validating');
+      
+      // Remove the class when the validation is stopped
+      var removeSpinner = function() { container.removeClass('validating') };
+      validation.onCancel(removeSpinner);
+      
+      // Build a params object from the settings and the current value
+      var params = Acceptance.extend({value: value}, settings);
+      
+      // Make the Ajax call, and call the continuation
+      // with the result of the uniqueness check
+      jQuery.get('/model_exists', params, function(response) {
+        removeSpinner();
+        var exists = (response === 'true');
+        returns( exists ? [message] : true );
+      });
+    };
+  });
+
+
+== Rails API
+
+Acceptance can use ActiveRecord validations to generate client-side
+validation rules. It comes with a generator for converting ActiveRecord
+validations into Acceptance JavaScript code, but you can substitute
+your own generator if you like. The default generator supports the
+following validation types:
+
+* +validates_acceptance_of+
+* +validates_confirmation_of+
+* +validates_exclusion_of+
+* +validates_format_of+
+* +validates_inclusion_of+
+* +validates_length_of+
+* +validates_presence_of+
+
+If you want client-side validation generated, just replace <tt>form_for(object)</tt>
+with <tt>validated_form_for(object)</tt>. (Remember to +extend+ the class
+of +object+ with <tt>Acceptance::ReflectsOnValidations</tt>.) The form
+will be rendered as normal, and a JavaScript snippet will be written
+after it containing rules from your model for the fields contained in
+the form.
+
+
+=== Custom code generators
+
+You can write your own code generator class to output JavaScript code from
+ActiveRecord validations. Your class should inherit either from <tt>Acceptance::Generator</tt>,
+which is a blank slate, or <tt>Acceptance::DefaultGenerator</tt>, which defines
+the built-in generators that ship with Acceptance. Use the +validate+ method to
+define code to generate from a validation, and +message+ to define error messages.
+For example, let's extend the default generator with code to generate uniqueness
+validations:
+
+  class ValidationGenerator < Acceptance::DefaultGenerator
+    message :uniqueness do |validation|
+      display_name = validation.field.to_s.humanize.downcase
+      "Sorry, this #{ display_name } is already taken."
+    end
+    
+    validate :uniqueness do |validation|
+      <<-SCRIPT
+        Acceptance.form('#{ form_id }').requires(#{ field_name_for validation }).
+        toBeUnique({
+          model:      '#{ validation.model }',
+          attribute:  '#{ validation.field }',
+          cs:         #{ validation.case_sensitive? }
+        }, #{ message_for validation });
+      SCRIPT
+    end
+  end
+
+We then need to set this class as the generator for Acceptance to use:
+
+  Acceptance.generator = ValidationGenerator
+
+Any model with +validates_uniquess_of+ rules will now use these methods
+to generate client-side code.
+
+Within your generator, there are a number of helper functions you
+can use to generate code:
+
+<b><tt>form_id</tt></b>: returns the DOM id of the form we're generating code for.
+
+<b><tt>object_name</tt></b>: returns the name that the Rails form renderer is
+using for the model instance in the form.
+
+<b><tt>field_name_for(validation)</tt></b>: returns the field name Rails will
+use for the field, for example the title field for a blog post might be
+<tt>'post[title]'</tt>.
+
+<b><tt>message_for(validation)</tt></b>: returns the error message for the
+validation, using either a default message defined in the generator or
+the message specified in the model.
+
+The +validation+ object has its own set of methods that you can use
+to get information about the validation:
+
+<b><tt>validation.macro</tt></b>: returns the type of validation, e.g.
+<tt>:acceptance</tt> or <tt>:inclusion</tt>.
+
+<b><tt>validation.model</tt></b>: returns the model class the validation
+appears in, e.g. <tt>Post</tt>.
+
+<b><tt>validation.field</tt></b>: returns the attribute the validation
+applies to, e.g. <tt>:title</tt>.
+
+<b><tt>validation.message</tt></b>: returns the validation message specified
+in the model, or +nil+ if none is set.
+
+<b><tt>validation.on</tt></b>: returns the event the validation is set to
+run on, e.g. <tt>:create</tt> or <tt>:update</tt>.
+
+Validation objects also have other option-reading methods depending
+on their type, for example our uniqueness validation above has a
+<tt>case_sensitive?</tt> method that reflects the option used to
+define the validation in the model. You can typically read any option
+out of a validation by calling it as a method, though boolean option
+methods do end with a question mark.
+
+
+== License
+
+Copyright (c) 2009 James Coglan, released under the MIT license.
+

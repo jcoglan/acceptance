@@ -62,6 +62,10 @@ module Acceptance
       message.inspect
     end
     
+    def field_name_for(validation)
+      "'#{ object_name }[#{ validation.field }]'"
+    end
+    
     TEMPLATE = <<-JAVASCRIPT
     <script type="text/javascript" id="<%= form_id %>_validation">
     (function() {
@@ -77,10 +81,6 @@ module Acceptance
   class DefaultGenerator < Generator
     def rule_base(validation)
       "Acceptance.form('#{ form_id }').requires(#{ field_name_for validation })"
-    end
-    
-    def field_name_for(validation)
-      "'#{ object_name }[#{ validation.field }]'"
     end
     
     validate :acceptance do |validation|
