@@ -10,6 +10,12 @@ module Acceptance
         end
       end
       
+      def self.generate_message_using(symbol)
+        define_method(:generate_message) do
+          ActiveRecord::Error.new(@model.new, @field, symbol).full_message
+        end
+      end
+      
       def initialize(model, field, options = {})
         @model = model
         @field = field.to_sym

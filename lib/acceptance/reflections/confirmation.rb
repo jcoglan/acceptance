@@ -4,15 +4,11 @@ module Acceptance
   module Reflections
     class Confirmation < Base
       
+      generate_message_using :confirmation
+      
       def initialize(*args)
         super
         @macro = :confirmation
-      end
-      
-    private
-      
-      def generate_message
-        ActiveRecord::Error.new(@model.new, @field, :confirmation).full_message
       end
       
     end

@@ -4,6 +4,8 @@ module Acceptance
   module Reflections
     class Inclusion < Base
       
+      generate_message_using :inclusion
+      
       def initialize(*args)
         super
         @macro = :inclusion
@@ -19,12 +21,6 @@ module Acceptance
       
       def allow_blank?
         !!@options[:allow_blank]
-      end
-      
-    private
-      
-      def generate_message
-        ActiveRecord::Error.new(@model.new, @field, :inclusion).full_message
       end
       
     end

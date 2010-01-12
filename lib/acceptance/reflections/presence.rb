@@ -4,15 +4,11 @@ module Acceptance
   module Reflections
     class Presence < Base
       
+      generate_message_using :blank
+      
       def initialize(*args)
         super
         @macro = :presence
-      end
-      
-    private
-      
-      def generate_message
-        ActiveRecord::Error.new(@model.new, @field, :blank).full_message
       end
       
     end

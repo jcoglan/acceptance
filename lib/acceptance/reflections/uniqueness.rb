@@ -4,6 +4,8 @@ module Acceptance
   module Reflections
     class Uniqueness < Base
 
+      generate_message_using :taken
+      
       def initialize(*args)
         super
         @macro = :uniqueness
@@ -21,12 +23,6 @@ module Acceptance
 
       def allow_blank?
         !!@options[:allow_blank]
-      end
-      
-    private
-      
-      def generate_message
-        ActiveRecord::Error.new(@model.new, @field, :taken).full_message
       end
 
     end

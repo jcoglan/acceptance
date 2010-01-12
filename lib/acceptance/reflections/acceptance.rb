@@ -4,6 +4,8 @@ module Acceptance
   module Reflections
     class Acceptance < Base
       
+      generate_message_using :accepted
+      
       def initialize(*args)
         super
         @macro = :acceptance
@@ -15,12 +17,6 @@ module Acceptance
       
       def accept
         @options[:accept] || "1"
-      end
-      
-    private
-      
-      def generate_message
-        ActiveRecord::Error.new(@model.new, @field, :accepted).full_message
       end
       
     end
