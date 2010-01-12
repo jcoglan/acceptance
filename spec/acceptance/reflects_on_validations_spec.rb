@@ -50,21 +50,23 @@ describe Acceptance::ReflectsOnValidations do
   describe :confirmation do
     before :each do
       @class = make_class do
-        validates_confirmation_of :email, :message => "You should confirm your email"
-        validates_confirmation_of :password
+        validates_confirmation_of :email, :message => "should confirm your email"
+        validates_confirmation_of :password, :on => :update
       end
     end
     
     it "reflects on validates_confirmation_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                    :confirmation,
-                                   :message => "You should confirm your email"
+                                   :message => "Email should confirm your email",
+                                   :on => :save
     end
     
     it "reflects on validates_confirmation_of :password" do
       reflect(:password).first.should reflect_validation_of :password,
                                      :confirmation,
-                                     :message => nil
+                                     :message => "Password doesn't match confirmation",
+                                     :on => :update
     end
     
     it "retains validation logic" do

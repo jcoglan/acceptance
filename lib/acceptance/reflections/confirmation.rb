@@ -9,6 +9,12 @@ module Acceptance
         @macro = :confirmation
       end
       
+    private
+      
+      def generate_message
+        ActiveRecord::Error.new(@model.new, @field, :confirmation).full_message
+      end
+      
     end
   end
 end
