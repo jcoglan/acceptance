@@ -16,7 +16,15 @@ module Acceptance
         @options = options
       end
       
-      option_reader :message, :on
+      def message
+        @options.has_key?(:message) ?
+            "#{ @field.to_s.humanize } #{ @options[:message] }" :
+            generate_message
+      end
+      
+      def on
+        @options[:on] || :save
+      end
     end
     
     def self.create(type, model, field, options)

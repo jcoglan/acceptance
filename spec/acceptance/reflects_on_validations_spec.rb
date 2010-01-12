@@ -6,7 +6,8 @@ describe Acceptance::ReflectsOnValidations do
   describe :acceptance do
     before :each do
       @class = make_class do
-        validates_acceptance_of :terms, :message => "Only on our terms"
+        validates_acceptance_of :terms, :message => "only on our terms"
+        validates_acceptance_of :on_create, :on => :create
         validates_acceptance_of :something, :allow_nil => false
         validates_acceptance_of :tests, :accept => true
       end
@@ -16,9 +17,16 @@ describe Acceptance::ReflectsOnValidations do
       reflect(:terms).first.should reflect_validation_of :terms,
                                    :acceptance,
                                    :model => @class,
-                                   :message => "Only on our terms",
+                                   :message => "Terms only on our terms",
+                                   :on => :save,
                                    :allow_nil? => true,
                                    :accept => "1"
+    end
+    
+    it "reflects on validates_acceptance_of :on_create" do
+      reflect(:on_create).first.should reflect_validation_of :on_create,
+                                       :acceptance,
+                                       :on => :create
     end
     
     it "reflects on validates_acceptance_of :something" do
@@ -30,7 +38,7 @@ describe Acceptance::ReflectsOnValidations do
     it "reflects on validates_acceptance_of :tests" do
       reflect(:tests).first.should reflect_validation_of :tests,
                                    :acceptance,
-                                   :message => nil,
+                                   :message => "Tests must be accepted",
                                    :accept => true
     end
     

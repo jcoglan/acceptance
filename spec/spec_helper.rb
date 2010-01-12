@@ -5,11 +5,13 @@ require File.dirname(__FILE__) + '/../lib/acceptance'
 
 module SpecHelper
   def make_class(&block)
-    Class.new(ActiveRecord::Base) do
+    klass = Class.new(ActiveRecord::Base) do
       set_table_name :sti
       extend Acceptance::ReflectsOnValidations
       instance_eval(&block)
     end
+    def klass.name; "TestClass"; end
+    klass
   end
   
   def factory(klass, attributes = {})
