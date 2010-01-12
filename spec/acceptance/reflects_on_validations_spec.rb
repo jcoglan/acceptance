@@ -223,28 +223,61 @@ describe Acceptance::ReflectsOnValidations do
   describe :length do
     before :each do
       @class = make_class do
-        validates_length_of :username, :is => 7, :message => "Your name should have 7 letters"
-        validates_length_of :email, :within => 10..30
+        validates_length_of :username, :is => 8, :message => "must be eight chars"
+        validates_length_of :email, :maximum => 60, :allow_nil => true
+        validates_length_of :password, :minimum => 3, :allow_blank => true
+        validates_length_of :address, :within => 1..22, :on => :update
       end
     end
     
     it "reflects on validates_length_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :length,
-                                      :is => 7,
-                                      :message => "Your name should have 7 letters"
+                                      :maximum => nil,
+                                      :minimum => nil,
+                                      :is => 8,
+                                      :within => nil,
+                                      :allow_nil? => false,
+                                      :allow_blank? => false,
+                                      :too_long => nil,
+                                      :too_short => nil,
+                                      :wrong_length => "Username is the wrong length (should be 8 characters)",
+                                      :message => "Username must be eight chars",
+                                      :on => :save
     end
     
     it "reflects on validates_length_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                    :length,
-                                   :within => 10..30,
-                                   :message => nil
+                                   :maximum => 60,
+                                   :is => nil,
+                                   :too_long => "Email is too long (maximum is 60 characters)",
+                                   :wrong_length => nil,
+                                   :message => "Email is too long (maximum is 60 characters)",
+                                   :allow_nil? => true
     end
     
-    it "retains validation logic" do
-      factory(@class, :username => 'me').should_not be_valid
-      factory(@class, :email => 'j@me.com').should_not be_valid
+    it "reflects on validates_length_of :password" do
+      reflect(:password).first.should reflect_validation_of :password,
+                                      :length,
+                                      :minimum => 3,
+                                      :is => nil,
+                                      :too_short => "Password is too short (minimum is 3 characters)",
+                                      :wrong_length => nil,
+                                      :message => "Password is too short (minimum is 3 characters)",
+                                      :allow_blank? => true
+    end
+    
+    it "reflects on validates_length_of :address" do
+      reflect(:address).first.should reflect_validation_of :address,
+                                     :length,
+                                     :is => nil,
+                                     :within => 1..22,
+                                     :too_short => "Address is too short (minimum is 1 characters)",
+                                     :too_long => "Address is too long (maximum is 22 characters)",
+                                     :wrong_length => nil,
+                                     :message => nil,
+                                     :on => :update
     end
   end
   
