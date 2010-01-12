@@ -173,39 +173,50 @@ describe Acceptance::ReflectsOnValidations do
   describe :format do
     before :each do
       @class = make_class do
+        validates_format_of :email,    :with => /pattern/, :message => "doesn't match the pattern"
         validates_format_of :password, :with => /pattern/, :allow_nil => true
-        validates_format_of :email,    :with => /pattern/, :message => "Invalid email!"
         validates_format_of :username, :with => /pattern/, :allow_blank => true
+        validates_format_of :address,  :with => /pattern/, :on => :create
       end
-    end
-    
-    it "reflects on validates_format_of :password" do
-      reflect(:password).first.should reflect_validation_of :password,
-                                      :format,
-                                      :pattern => /pattern/,
-                                      :allow_nil? => true,
-                                      :message => nil,
-                                      :allow_blank? => false
     end
     
     it "reflects on validates_format_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                    :format,
-                                   :pattern => /pattern/,
-                                   :message => "Invalid email!"
+                                   :message => "Email doesn't match the pattern",
+                                   :allow_nil? => false,
+                                   :allow_blank? => false,
+                                   :with => /pattern/,
+                                   :on => :save
+    end
+    
+    it "reflects on validates_format_of :password" do
+      reflect(:password).first.should reflect_validation_of :password,
+                                      :format,
+                                      :message => "Password is invalid",
+                                      :allow_nil? => true,
+                                      :with => /pattern/
     end
     
     it "reflects on validates_format_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :format,
-                                      :pattern => /pattern/,
-                                      :allow_blank? => true
+                                      :allow_blank? => true,
+                                      :with => /pattern/
+    end
+    
+    it "reflects on validates_format_of :address" do
+      reflect(:address).first.should reflect_validation_of :address,
+                                     :format,
+                                     :on => :create,
+                                     :with => /pattern/
     end
     
     it "retains validation logic" do
-      factory(@class, :password => "wrong").should_not be_valid
       factory(@class, :email => "wrong").should_not be_valid
+      factory(@class, :password => "wrong").should_not be_valid
       factory(@class, :username => "wrong").should_not be_valid
+      factory(@class, :address => "wrong").should_not be_valid
     end
   end
   

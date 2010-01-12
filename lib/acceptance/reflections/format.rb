@@ -20,6 +20,12 @@ module Acceptance
         !!@options[:allow_blank]
       end
       
+    private
+      
+      def generate_message
+        ActiveRecord::Error.new(@model.new, @field, :invalid).full_message
+      end
+      
     end
   end
 end
