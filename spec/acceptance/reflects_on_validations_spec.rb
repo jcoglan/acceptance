@@ -78,7 +78,7 @@ describe Acceptance::ReflectsOnValidations do
     before :each do
       @class = make_class do
         validates_exclusion_of :password, :in => %w[test pass]
-        validates_exclusion_of :email,    :in => %w[admin], :message => "Don't use a boring address"
+        validates_exclusion_of :email,    :in => %w[admin], :message => "is boring"
         validates_exclusion_of :age,      :in => 18..30,    :allow_nil => true
         validates_exclusion_of :username, :in => %w[usr],   :allow_blank => true
       end
@@ -88,7 +88,7 @@ describe Acceptance::ReflectsOnValidations do
       reflect(:password).first.should reflect_validation_of :password,
                                       :exclusion,
                                       :in => %w[test pass],
-                                      :message => nil,
+                                      :message => "Password is reserved",
                                       :allow_nil? => false,
                                       :allow_blank? => false
     end
@@ -97,7 +97,7 @@ describe Acceptance::ReflectsOnValidations do
       reflect(:email).first.should reflect_validation_of :email,
                                    :exclusion,
                                    :in => %w[admin],
-                                   :message => "Don't use a boring address"
+                                   :message => "Email is boring"
     end
     
     it "reflects on validates_exclusion_of :age" do
@@ -126,7 +126,7 @@ describe Acceptance::ReflectsOnValidations do
     before :each do
       @class = make_class do
         validates_inclusion_of :password, :in => %w[test pass]
-        validates_inclusion_of :email,    :in => %w[admin], :message => "Don't use a boring address"
+        validates_inclusion_of :email,    :in => %w[admin], :message => "is boring"
         validates_inclusion_of :age,      :in => 18..30,    :allow_nil => true
         validates_inclusion_of :username, :in => %w[usr],   :allow_blank => true
       end
@@ -136,7 +136,7 @@ describe Acceptance::ReflectsOnValidations do
       reflect(:password).first.should reflect_validation_of :password,
                                       :inclusion,
                                       :in => %w[test pass],
-                                      :message => nil,
+                                      :message => "Password is not included in the list",
                                       :allow_nil? => false,
                                       :allow_blank? => false
     end
@@ -145,7 +145,7 @@ describe Acceptance::ReflectsOnValidations do
       reflect(:email).first.should reflect_validation_of :email,
                                    :inclusion,
                                    :in => %w[admin],
-                                   :message => "Don't use a boring address"
+                                   :message => "Email is boring"
     end
     
     it "reflects on validates_inclusion_of :age" do
