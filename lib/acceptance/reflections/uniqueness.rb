@@ -22,6 +22,12 @@ module Acceptance
       def allow_blank?
         !!@options[:allow_blank]
       end
+      
+    private
+      
+      def generate_message
+        ActiveRecord::Error.new(@model.new, @field, :taken).full_message
+      end
 
     end
   end

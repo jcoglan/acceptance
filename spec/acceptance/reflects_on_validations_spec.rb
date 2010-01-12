@@ -284,21 +284,23 @@ describe Acceptance::ReflectsOnValidations do
   describe :presence do
     before :each do
       @class = make_class do
-        validates_presence_of :username, :message => "You should have a name"
-        validates_presence_of :email
+        validates_presence_of :username, :message => "should have a name"
+        validates_presence_of :email, :on => :create
       end
     end
     
     it "reflects on validates_presence_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :presence,
-                                      :message => "You should have a name"
+                                      :message => "Username should have a name",
+                                      :on => :save
     end
     
     it "reflects on validates_presence_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                       :presence,
-                                      :message => nil
+                                      :message => "Email can't be blank",
+                                      :on => :create
     end
     
     it "retains validation logic" do
@@ -310,34 +312,36 @@ describe Acceptance::ReflectsOnValidations do
   describe :uniqueness do
     before :each do
       @class = make_class do
-        validates_uniqueness_of :username, :message => "You should have a unique name"
-        validates_uniqueness_of :email, :allow_blank => true
-        validates_uniqueness_of :password, :scope => :username, :case_sensitive? => false
+        validates_uniqueness_of :username, :message => "should have a unique name"
+        validates_uniqueness_of :email, :allow_blank => true, :allow_nil => true
+        validates_uniqueness_of :password, :scope => :username, :case_sensitive => false
       end
     end
     
     it "reflects on validates_uniqueness_of :username" do
       reflect(:username).first.should reflect_validation_of :username,
                                       :uniqueness,
-                                      :message => "You should have a unique name",
-                                      :allow_blank? => false,
-                                      :allow_nil? => false,
+                                      :message => "Username should have a unique name",
                                       :scope => nil,
-                                      :case_sensitive? => true
+                                      :case_sensitive? => true,
+                                      :allow_blank? => false,
+                                      :allow_nil? => false
     end
     
     it "reflects on validates_uniqueness_of :email" do
       reflect(:email).first.should reflect_validation_of :email,
                                    :uniqueness,
-                                   :message => nil,
-                                   :allow_blank? => true
+                                   :message => "Email has already been taken",
+                                   :allow_blank? => true,
+                                   :allow_nil? => true
     end
     
     it "reflects on validates_uniqueness_of :password" do
       reflect(:password).first.should reflect_validation_of :password,
                                       :uniqueness,
-                                      :message => nil,
-                                      :scope => :username
+                                      :message => "Password has already been taken",
+                                      :scope => :username,
+                                      :case_sensitive? => false
     end
   end
   

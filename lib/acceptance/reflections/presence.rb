@@ -9,6 +9,12 @@ module Acceptance
         @macro = :presence
       end
       
+    private
+      
+      def generate_message
+        ActiveRecord::Error.new(@model.new, @field, :blank).full_message
+      end
+      
     end
   end
 end
