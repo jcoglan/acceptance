@@ -1,35 +1,11 @@
-<!doctype html>
-<html>
-<head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-  <title>Page Title</title>
-  <%= javascript_include_tag "acceptance" %>
-</head>
-<body>
-
-  <% validated_form_for(@article) do |f| %>
-    <%= field f, :terms, :check_box %>
-    <%= submit_tag "Save" %>
-  <% end %>
+<% validated_form_for(@article) do |f| %>
+  <%= field f, :terms, :check_box %>
   
-  <script type="text/javascript">
-    Acceptance.onValidation(function(field) {
-      var input = field.getInput(),
-          container = input.parentNode,
-          errorElem = container.getElementsByTagName('span')[0];
-      
-      if (field.isIndeterminate() || field.isValid()) {
-        if (errorElem) errorElem.parentNode.removeChild(errorElem);
-      } else {
-        if (!errorElem) {
-          errorElem = document.createElement('span');
-          container.appendChild(errorElem);
-        }
-        errorElem.innerHTML = field.getErrorMessages()[0];
-      }
-    });
-  </script>
-
-</body>
-</html>
+  <%= field f, :password, :password_field %>
+  <%= field f, :password_confirmation, :password_field %>
+  
+  <%= field f, :title %>
+  
+  <%= submit_tag "Save" %>
+<% end %>
 

@@ -6,7 +6,7 @@ FileUtils.mkdir_p(VALIDATION_CONFIG)
 
 module CodeInjection
   def inject_code(class_name, code)
-    File.open(VALIDATION_CONFIG + class_name.tableize.singularize + '.rb', 'w') do |f|
+    File.open(VALIDATION_CONFIG + class_name.tableize.singularize + '.rb', 'a') do |f|
       f.write <<-CODE
       class #{class_name}
         #{code}
@@ -32,19 +32,19 @@ Given /^the (\S+) class validates (\S+) of (\S+) on (\S+)$/ do |class_name, vali
   inject_code class_name, "validates_#{validation}_of :#{field}, :on => :#{event}"
 end
 
-Given /^the (\S+) class validates (\S+) of (\S+) with message "([^\"]*)"$/ do |class_name, validation, field, message|
-  inject_code class_name, "validates_#{validation}_of :#{field}, :message => \"#{message}\""
+Given /^the (\S+) class validates (\S+) of (\S+) with (\S+) (.+)$/ do |class_name, validation, field, option, value|
+  inject_code class_name, "validates_#{validation}_of :#{field}, :#{option} => #{value}"
 end
 
 When /^I visit "([^\"]*)"$/ do |path|
   $browser.goto @host + path
 end
 
-When /^I focus the check box "([^\"]*)"$/ do |field|
+When /^I focus the "([^\"]*)" check box$/ do |field|
   find_by_label_or_id(:check_box, field).focus
 end
 
-When /^I focus the button "([^\"]*)"$/ do |button|
+When /^I focus the "([^\"]*)" button$/ do |button|
   $browser.button(:text, button).focus
 end
 

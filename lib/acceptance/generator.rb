@@ -40,7 +40,8 @@ module Acceptance
     
     def validations
       @object.class.reflect_on_all_validations.select do |validation|
-        @fields.include?(validation.field)
+        field = (validation.macro == :confirmation) ? "#{validation.field}_confirmation" : validation.field
+        @fields.include?(field.to_sym)
       end
     end
     
