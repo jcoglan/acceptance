@@ -56,9 +56,7 @@ module Acceptance
     
     def message_for(validation)
       method = "generate_#{validation.macro}_message"
-      message = respond_to?(method) ?
-                __send__(method, validation) :
-                "#{ validation.field.to_s.humanize } #{ validation.message }"
+      message = respond_to?(method) ? __send__(method, validation) : validation.message
       message.inspect
     end
     

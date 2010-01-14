@@ -9,8 +9,8 @@ task :build do
   puts 'Building JavaScript client ...'
   Jake.build!(File.dirname(__FILE__))
   
-  FileUtils.mkdir_p 'test-app/public/javascripts'
-  FileUtils.cp 'javascript/build/acceptance.js', 'test-app/public/javascripts/acceptance.js'
+  FileUtils.mkdir_p 'test_app/public/javascripts'
+  FileUtils.cp 'javascript/build/acceptance.js', 'test_app/public/javascripts/acceptance.js'
 end
 
 desc 'Default: run unit tests.'

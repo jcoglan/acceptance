@@ -38,7 +38,7 @@ Acceptance.DSL = {
     toBeChecked: function(message) {
       this._field.addTest(function(returns, validation) {
         var input = validation.getInput();
-        returns( (value === input.value && input.checked) || [message] );
+        returns( input.checked || [message] );
       });
       return this;
     },

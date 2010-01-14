@@ -4,4 +4,8 @@
 *.log
 webrat-*
 javascript/build
-test-app/public
+test_app/config/validation
+test_app/db
+test_app/log
+test_app/tmp
+test_app/public/javascripts/acceptance.js
