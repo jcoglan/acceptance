@@ -4,24 +4,36 @@ require 'find'
 VALIDATION_CONFIG = File.dirname(__FILE__) + '/../../config/validation/'
 FileUtils.mkdir_p(VALIDATION_CONFIG)
 
-After do
-  Given "I remove all validations"
-end
-
-Given /^the Article class validates acceptance of (\S+)$/ do |field|
-  File.open(VALIDATION_CONFIG + 'article.rb', 'w') do |f|
-    f.write <<-CODE
-    class Article
-      validates_acceptance_of :#{field}
+module CodeInjection
+  def inject_code(class_name, code)
+    File.open(VALIDATION_CONFIG + class_name.tableize.singularize + '.rb', 'w') do |f|
+      f.write <<-CODE
+      class #{class_name}
+        #{code}
+      end
+      CODE
     end
-    CODE
   end
 end
+
+World CodeInjection
+
+After { Given "I remove all validations" }
 
 Given /^I remove all validations$/ do
-  Find.find(VALIDATION_CONFIG) do |path|
-    File.delete(path) if File.file?(path)
-  end
+  Find.find(VALIDATION_CONFIG) { |path| File.delete(path) if File.file?(path) }
+end
+
+Given /^the (\S+) class validates (\S+) of (\S+)$/ do |class_name, validation, field|
+  inject_code class_name, "validates_#{validation}_of :#{field}"
+end
+
+Given /^the (\S+) class validates (\S+) of (\S+) on (\S+)$/ do |class_name, validation, field, event|
+  inject_code class_name, "validates_#{validation}_of :#{field}, :on => :#{event}"
+end
+
+Given /^the (\S+) class validates (\S+) of (\S+) with message "([^\"]*)"$/ do |class_name, validation, field, message|
+  inject_code class_name, "validates_#{validation}_of :#{field}, :message => \"#{message}\""
 end
 
 When /^I visit "([^\"]*)"$/ do |path|
