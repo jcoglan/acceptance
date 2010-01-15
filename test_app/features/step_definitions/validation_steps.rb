@@ -18,10 +18,9 @@ end
 
 World CodeInjection
 
-After { Given "I remove all validations" }
-
-Given /^I remove all validations$/ do
+After do
   Find.find(VALIDATION_CONFIG) { |path| File.delete(path) if File.file?(path) }
+  Article.delete_all
 end
 
 Given /^the (\S+) class validates (\S+) of (\S+)$/ do |class_name, validation, field|
@@ -34,6 +33,10 @@ end
 
 Given /^the (\S+) class validates (\S+) of (\S+) with (\S+) (.+)$/ do |class_name, validation, field, option, value|
   inject_code class_name, "validates_#{validation}_of :#{field}, :#{option} => #{value}"
+end
+
+Given /^there is an Article$/ do
+  Article.create
 end
 
 When /^I visit "([^\"]*)"$/ do |path|
