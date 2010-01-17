@@ -11,15 +11,17 @@
           container = input.parentNode,
           errorElem = container.getElementsByTagName('span')[0];
       
-      if (field.isIndeterminate() || field.isValid()) {
-        if (errorElem) errorElem.parentNode.removeChild(errorElem);
-      } else {
-        if (!errorElem) {
-          errorElem = document.createElement('span');
-          container.appendChild(errorElem);
-        }
-        errorElem.innerHTML = field.getErrorMessages()[0];
+      if (!errorElem) {
+        errorElem = document.createElement('span');
+        container.appendChild(errorElem);
       }
+      
+      if (field.isValid())
+        errorElem.innerHTML = field.getDisplayName() + ' is valid';
+      else if (field.isIndeterminate())
+        errorElem.parentNode.removeChild(errorElem);
+      else
+        errorElem.innerHTML = field.getErrorMessages()[0];
     });
   </script>
   

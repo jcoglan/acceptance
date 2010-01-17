@@ -22,6 +22,8 @@ Acceptance.Field = Acceptance.Class({
       this._cancelValidation();
     }, this);
     
+    this._displayName = (Acceptance.Dom.getLabel(this._input) || {}).innerHTML;
+    
     return this._input;
   },
   
@@ -108,11 +110,12 @@ Acceptance.Field = Acceptance.Class({
         value    = formData[this._fieldName];
     
     return Acceptance.Validation.create({
-      _form:      this._form.getForm(),
-      _input:     this.getInput(),
-      _value:     value,
-      _data:      formData,
-      _eventType: eventType
+      _form:        this._form.getForm(),
+      _input:       this.getInput(),
+      _displayName: this._displayName,
+      _value:       value,
+      _data:        formData,
+      _eventType:   eventType
     });
   }
   

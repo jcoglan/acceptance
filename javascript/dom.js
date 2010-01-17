@@ -14,6 +14,16 @@ Acceptance.Dom = {
     return false;
   },
   
+  getLabel: function(input) {
+    var labels = document.getElementsByTagName('label'),
+        i      = labels.length;
+    
+    while (i--) {
+      if (labels[i].htmlFor === input.id) return labels[i];
+    }
+    return null;
+  },
+  
   getInputs: function(form, name, type) {
     var results = [];
     Acceptance.each(this.INPUT_TAGS, function(tagName) {
