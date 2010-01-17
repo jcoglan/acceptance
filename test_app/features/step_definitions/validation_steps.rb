@@ -57,6 +57,10 @@ When /^I visit "([^\"]*)"$/ do |path|
   $browser.goto @host + path
 end
 
+When /^I focus the "([^\"]*)" field$/ do |field|
+  find_by_label_or_id(:text_field, field).focus
+end
+
 When /^I focus the "([^\"]*)" check box$/ do |field|
   find_by_label_or_id(:check_box, field).focus
 end

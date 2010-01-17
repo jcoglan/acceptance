@@ -1,6 +1,16 @@
 module Acceptance
   class Generator
     
+    TEMPLATE = <<-JAVASCRIPT
+    <script type="text/javascript" id="<%= form_id %>_validation">
+    (function() {
+      <% validations.each do |validation| -%>
+        <%= generate_code_for validation %>
+      <% end -%>
+    })();
+    </script>
+    JAVASCRIPT
+    
     def self.disable!
       @disabled = true
     end
@@ -65,16 +75,11 @@ module Acceptance
       "'#{ object_name }[#{ validation.field }]'"
     end
     
-    TEMPLATE = <<-JAVASCRIPT
-    <script type="text/javascript" id="<%= form_id %>_validation">
-    (function() {
-      <% validations.each do |validation| -%>
-        <%= generate_code_for validation %>
-      <% end -%>
-    })();
-    </script>
-    JAVASCRIPT
-    
+    def options_for(validation)
+      "{" + {:allowBlank => validation.allow_blank?}.map { |(key, value)|
+        "#{ key }: #{ value.inspect }"
+      }.join(", ") + "}"
+    end
   end
   
   class DefaultGenerator < Generator
@@ -95,11 +100,21 @@ module Acceptance
     end
     
     validate :exclusion do |validation|
-      "#{ rule_base validation }.toBeNoneOf(#{ validation.in.to_a.inspect }, #{ message_for validation});"
+      <<-SCRIPT
+     #{ rule_base validation }.
+     toBeNoneOf(#{ validation.in.to_a.inspect },
+                #{ message_for validation },
+                #{ options_for validation });
+     SCRIPT
     end
     
     validate :inclusion do |validation|
-      "#{ rule_base validation }.toBeOneOf(#{ validation.in.to_a.inspect }, #{ message_for validation});"
+      <<-SCRIPT
+     #{ rule_base validation }.
+     toBeOneOf(#{ validation.in.to_a.inspect },
+               #{ message_for validation },
+               #{ options_for validation });
+     SCRIPT
     end
     
     validate :format do |validation|

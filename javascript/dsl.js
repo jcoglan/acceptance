@@ -43,9 +43,11 @@ Acceptance.DSL = {
       return this;
     },
     
-    toBeOneOf: function(list, message) {
+    toBeOneOf: function(list, message, options) {
+      options = options || {};
       this._field.addTest(function(returns, validation) {
         var value = validation.getValue();
+        if (options.allowBlank && !Acceptance.trim(value)) return returns( true );
         returns( Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
