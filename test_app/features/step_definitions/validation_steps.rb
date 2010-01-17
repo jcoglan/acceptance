@@ -23,18 +23,22 @@ After do
   Article.delete_all
 end
 
-LIST_RE = /"[^\"]*"(?:, "[^\"]*")*/
+ITEM_RE = /(?:"[^\"]*"|0|[1-9][0-9]*)/
+LIST_RE = /\d+\.\.\d+|#{ITEM_RE}(?:, #{ITEM_RE})*/
 
 Given /^the (\S+) class validates (inclusion|exclusion) of (\S+) in (#{LIST_RE}) with (\S+) (.+)$/ do |class_name, validation, field, list, option, value|
-  inject_code class_name, "validates_#{validation}_of :#{field}, :in => [#{list}], :#{option} => #{value}"
+  list = "[#{list}]" unless list =~ /\d+\.\.\d+/
+  inject_code class_name, "validates_#{validation}_of :#{field}, :in => #{list}, :#{option} => #{value}"
 end
 
 Given /^the (\S+) class validates (inclusion|exclusion) of (\S+) in (#{LIST_RE})$/ do |class_name, validation, field, list|
-  inject_code class_name, "validates_#{validation}_of :#{field}, :in => [#{list}]"
+  list = "[#{list}]" unless list =~ /\d+\.\.\d+/
+  inject_code class_name, "validates_#{validation}_of :#{field}, :in => #{list}"
 end
 
 Given /^the (\S+) class validates (inclusion|exclusion) of (\S+) on (\S+) in (#{LIST_RE})$/ do |class_name, validation, field, event, list|
-  inject_code class_name, "validates_#{validation}_of :#{field}, :in => [#{list}], :on => :#{event}"
+  list = "[#{list}]" unless list =~ /\d+\.\.\d+/
+  inject_code class_name, "validates_#{validation}_of :#{field}, :in => #{list}, :on => :#{event}"
 end
 
 Given /^the (\S+) class validates (\S+) of (\S+)$/ do |class_name, validation, field|

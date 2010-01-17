@@ -101,20 +101,20 @@ module Acceptance
     
     validate :exclusion do |validation|
       <<-SCRIPT
-     #{ rule_base validation }.
-     toBeNoneOf(#{ validation.in.to_a.inspect },
-                #{ message_for validation },
-                #{ options_for validation });
-     SCRIPT
+      #{ rule_base validation }.
+      toBeNoneOf(#{ validation.in.to_a.inspect },
+                 #{ message_for validation },
+                 #{ options_for validation });
+      SCRIPT
     end
     
     validate :inclusion do |validation|
       <<-SCRIPT
-     #{ rule_base validation }.
-     toBeOneOf(#{ validation.in.to_a.inspect },
-               #{ message_for validation },
-               #{ options_for validation });
-     SCRIPT
+      #{ rule_base validation }.
+      toBeOneOf(#{ validation.in.to_a.inspect },
+                #{ message_for validation },
+                #{ options_for validation });
+      SCRIPT
     end
     
     validate :format do |validation|
