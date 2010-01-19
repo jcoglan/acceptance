@@ -26,7 +26,7 @@ Feature: Client-side confirmation validation
     And I focus the "Save" button
     Then I should see "Password must be confirmed"
   
-  Scenario: Don't see error message when editing an object
+  Scenario: Don't see error message when editing an article
     Given there is an Article
     And the Article class validates confirmation of password on create
     When I visit "/articles/1/edit"

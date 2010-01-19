@@ -34,7 +34,7 @@ Feature: Client-side inclusion and exclusion validation
     | inclusion | true        | see "Title is valid"     | not see "Title is not included in the list" | 
     | inclusion | false       | not see "Title is valid" | see "Title is not included in the list"     | 
   
-  Scenario Outline: Seeign a custom error message
+  Scenario Outline: Seeing a custom error message
     Given the Article class validates <type> of title in "Thom", "Jonny", "Ed" with message "<message>"
     When I visit "/articles/new"
     And I fill in "Title" with "<title>"

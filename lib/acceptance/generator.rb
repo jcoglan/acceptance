@@ -75,10 +75,13 @@ module Acceptance
       "'#{ object_name }[#{ validation.field }]'"
     end
     
-    def options_for(validation)
-      "{" + {:allowBlank => validation.allow_blank?}.map { |(key, value)|
-        "#{ key }: #{ value.inspect }"
-      }.join(", ") + "}"
+    def options_for(validation, *keys)
+      options = keys.inject({}) do |table, key|
+        javascript_key = key.to_s.gsub(/\?$/, "").gsub(/_([a-z])/) { $1.upcase }
+        table[javascript_key] = validation.__send__(key)
+        table
+      end
+      "{" + options.map { |(key, value)| "#{key}: #{value.inspect}" } * ", " + "}"
     end
   end
   
@@ -104,7 +107,7 @@ module Acceptance
       #{ rule_base validation }.
       toBeNoneOf(#{ validation.in.to_a.inspect },
                  #{ message_for validation },
-                 #{ options_for validation });
+                 #{ options_for validation, :allow_blank? });
       SCRIPT
     end
     
@@ -113,14 +116,19 @@ module Acceptance
       #{ rule_base validation }.
       toBeOneOf(#{ validation.in.to_a.inspect },
                 #{ message_for validation },
-                #{ options_for validation });
+                #{ options_for validation, :allow_blank? });
       SCRIPT
     end
     
     validate :format do |validation|
       pattern = validation.pattern
       flags = (pattern.options & Regexp::IGNORECASE).nonzero? ? 'i' : ''
-      "#{ rule_base validation }.toMatch(/#{ pattern.source }/#{ flags }, #{ message_for validation });"
+      <<-SCRIPT
+      #{ rule_base validation }.
+      toMatch(/#{ pattern.source }/#{ flags },
+              #{ message_for validation },
+              #{ options_for validation, :allow_blank? });
+      SCRIPT
     end
     
     validate :length do |validation|

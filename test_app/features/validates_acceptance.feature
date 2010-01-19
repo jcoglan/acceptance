@@ -20,7 +20,7 @@ Feature: Client-side acceptance validation
     And I focus the "Save" button
     Then I should not see "Terms must be accepted"
   
-  Scenario: Don't see error message for new objects
+  Scenario: Don't see error message for new articles
     Given the Article class validates acceptance of terms on update
     When I visit "/articles/new"
     And I focus the "Terms" check box

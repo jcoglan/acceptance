@@ -41,6 +41,18 @@ Given /^the (\S+) class validates (inclusion|exclusion) of (\S+) on (\S+) in (#{
   inject_code class_name, "validates_#{validation}_of :#{field}, :in => #{list}, :on => :#{event}"
 end
 
+Given /^the (\S+) class validates format of (\S+) using (\/.*\/[a-z]*)$/ do |class_name, field, pattern|
+  inject_code class_name, "validates_format_of :#{field}, :with => #{pattern}"
+end
+
+Given /^the (\S+) class validates format of (\S+) on (\S+) using (\/.*\/[a-z]*)$/ do |class_name, field, event, pattern|
+  inject_code class_name, "validates_format_of :#{field}, :with => #{pattern}, :on => :#{event}"
+end
+
+Given /^the (\S+) class validates format of (\S+) using (\/.*\/[a-z]*) with (\S+) (.+)$/ do |class_name, field, pattern, option, value|
+  inject_code class_name, "validates_format_of :#{field}, :with => #{pattern}, :#{option} => #{value}"
+end
+
 Given /^the (\S+) class validates (\S+) of (\S+)$/ do |class_name, validation, field|
   inject_code class_name, "validates_#{validation}_of :#{field}"
 end

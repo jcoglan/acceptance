@@ -90,9 +90,11 @@ Acceptance.DSL = {
       return this;
     },
     
-    toMatch: function(pattern, message) {
+    toMatch: function(pattern, message, options) {
+      options = options || {};
       this._field.addTest(function(returns, validation) {
         var value = validation.getValue();
+        if (options.allowBlank && !Acceptance.trim(value)) return returns( true );
         returns( pattern.test(value) || [message] );
       });
       return this;
