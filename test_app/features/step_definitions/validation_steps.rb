@@ -53,6 +53,10 @@ Given /^the (\S+) class validates format of (\S+) using (\/.*\/[a-z]*) with (\S+
   inject_code class_name, "validates_format_of :#{field}, :with => #{pattern}, :#{option} => #{value}"
 end
 
+Given /^the (\S+) class validates length of (\S+) \((\S+): (\S+)\)$/ do |class_name, field, option, value|
+  inject_code class_name, "validates_length_of :#{field}, :#{option} => #{value}"
+end
+
 Given /^the (\S+) class validates (\S+) of (\S+)$/ do |class_name, validation, field|
   inject_code class_name, "validates_#{validation}_of :#{field}"
 end

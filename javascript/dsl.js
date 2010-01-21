@@ -77,15 +77,21 @@ Acceptance.DSL = {
       return this;
     },
     
-    toHaveLength: function(options, message) {
+    toHaveLength: function(options, messages) {
       var min = options.minimum, max = options.maximum;
       this._field.addTest(function(returns, validation) {
-        var value = validation.getValue();
-        returns ( (typeof options === 'number' && value.length !== options && [message]) ||
-                  (min !== undefined && value.length < min && [message]) ||
-                  (max !== undefined && value.length > max && [message]) ||
-                  true
-                );
+        var value = validation.getValue(), length = value.length;
+        
+        if (min !== undefined && length < min)
+          return returns( [messages.tooShort] );
+        
+        if (max !== undefined && length > max)
+          return returns( [messages.tooLong] );
+        
+        if (typeof options === 'number' && length !== options)
+          return returns( [messages.wrongLength] );
+        
+        returns( true );
       });
       return this;
     },

@@ -81,7 +81,9 @@ module Acceptance
         table[javascript_key] = validation.__send__(key)
         table
       end
-      "{" + options.map { |(key, value)| "#{key}: #{value.inspect}" } * ", " + "}"
+      "{" + options.map { |(key, value)|
+        "#{key}: #{value.nil? ? 'null' : value.inspect}"
+      } * ", " + "}"
     end
   end
   
@@ -140,7 +142,11 @@ module Acceptance
         max = range ? range.max : validation.maximum
         value = "{" + [min && "minimum: #{min}", max && "maximum: #{max}"].compact.join(', ') + "}"
       end
-      "#{ rule_base validation }.toHaveLength(#{ value }, #{ message_for validation });"
+      # TODO support custom messages from the generator
+      <<-SCRIPT
+      #{ rule_base validation }.toHaveLength(#{ value },
+      #{ options_for validation, :too_short, :too_long, :wrong_length });
+      SCRIPT
     end
     
     validate :presence do |validation|
