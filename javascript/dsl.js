@@ -36,27 +36,27 @@ Acceptance.DSL = {
     },
     
     toBeChecked: function(message) {
-      this._field.addTest(function(returns, validation) {
+      this._field.addTest(function(result, validation) {
         var input = validation.getInput();
-        returns( input.checked || [message] );
+        result( input.checked || [message] );
       });
       return this;
     },
     
     toBeOneOf: function(list, message, options) {
       options = options || {};
-      this._field.addTest(function(returns, validation) {
+      this._field.addTest(function(result, validation) {
         var value = Acceptance.trim(validation.getValue());
-        if (options.allowBlank && !Acceptance.trim(value)) return returns( true );
-        returns( Acceptance.arrayIncludes(list, value) || [message] );
+        if (options.allowBlank && !Acceptance.trim(value)) return result( true );
+        result( Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
     },
     
     toBeNoneOf: function(list, message) {
-      this._field.addTest(function(returns, validation) {
+      this._field.addTest(function(result, validation) {
         var value = Acceptance.trim(validation.getValue());
-        returns( !Acceptance.arrayIncludes(list, value) || [message] );
+        result( !Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
     },
@@ -69,39 +69,39 @@ Acceptance.DSL = {
         if (this._field.isTouched()) this._field.validate('change');
       }, this);
       
-      this._field.addTest(function(returns, validation) {
-        if (!targetValid) return returns( null );
+      this._field.addTest(function(result, validation) {
+        if (!targetValid) return result( null );
         var value = validation.getValue();
-        returns( (value === validation.get(field)) || [message] );
+        result( (value === validation.get(field)) || [message] );
       });
       return this;
     },
     
     toHaveLength: function(options, messages) {
       var min = options.minimum, max = options.maximum;
-      this._field.addTest(function(returns, validation) {
+      this._field.addTest(function(result, validation) {
         var value = validation.getValue(), length = value.length;
         
         if (min !== undefined && length < min)
-          return returns( [Acceptance.interpolate(messages.tooShort, {count: min})] );
+          return result( [Acceptance.interpolate(messages.tooShort, {count: min})] );
         
         if (max !== undefined && length > max)
-          return returns( [Acceptance.interpolate(messages.tooLong, {count: max})] );
+          return result( [Acceptance.interpolate(messages.tooLong, {count: max})] );
         
         if (typeof options === 'number' && length !== options)
-          return returns( [Acceptance.interpolate(messages.wrongLength, {count: options})] );
+          return result( [Acceptance.interpolate(messages.wrongLength, {count: options})] );
         
-        returns( true );
+        result( true );
       });
       return this;
     },
     
     toMatch: function(pattern, message, options) {
       options = options || {};
-      this._field.addTest(function(returns, validation) {
+      this._field.addTest(function(result, validation) {
         var value = validation.getValue();
-        if (options.allowBlank && !Acceptance.trim(value)) return returns( true );
-        returns( pattern.test(value) || [message] );
+        if (options.allowBlank && !Acceptance.trim(value)) return result( true );
+        result( pattern.test(value) || [message] );
       });
       return this;
     }
