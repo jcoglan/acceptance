@@ -83,13 +83,13 @@ Acceptance.DSL = {
         var value = validation.getValue(), length = value.length;
         
         if (min !== undefined && length < min)
-          return returns( [messages.tooShort] );
+          return returns( [Acceptance.interpolate(messages.tooShort, {count: min})] );
         
         if (max !== undefined && length > max)
-          return returns( [messages.tooLong] );
+          return returns( [Acceptance.interpolate(messages.tooLong, {count: max})] );
         
         if (typeof options === 'number' && length !== options)
-          return returns( [messages.wrongLength] );
+          return returns( [Acceptance.interpolate(messages.wrongLength, {count: options})] );
         
         returns( true );
       });

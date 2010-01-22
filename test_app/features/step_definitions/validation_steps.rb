@@ -57,6 +57,10 @@ Given /^the (\S+) class validates length of (\S+) \((\S+): (\S+)\)$/ do |class_n
   inject_code class_name, "validates_length_of :#{field}, :#{option} => #{value}"
 end
 
+Given /^the (\S+) class validates length of (\S+) \((\S+): (\S+)\) with (\S+) (.+)$/ do |class_name, field, option, value, message_type, message|
+  inject_code class_name, "validates_length_of :#{field}, :#{option} => #{value}, :#{message_type} => #{message}"
+end
+
 Given /^the (\S+) class validates (\S+) of (\S+)$/ do |class_name, validation, field|
   inject_code class_name, "validates_#{validation}_of :#{field}"
 end

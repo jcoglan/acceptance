@@ -239,9 +239,9 @@ describe Acceptance::ReflectsOnValidations do
                                       :within => nil,
                                       :allow_nil? => false,
                                       :allow_blank? => false,
-                                      :too_long => nil,
-                                      :too_short => nil,
-                                      :wrong_length => "Username is the wrong length (should be 8 characters)",
+                                      :too_long => "Username must be eight chars",
+                                      :too_short => "Username must be eight chars",
+                                      :wrong_length => "Username must be eight chars",
                                       :message => "Username must be eight chars",
                                       :on => :save
     end

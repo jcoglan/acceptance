@@ -27,6 +27,10 @@ Acceptance = {
     return string.replace(/^\s*/g, '').replace(/\s*$/g, '');
   },
   
+  interpolate: function(template, data) {
+    return template.replace(/\{\{(\w+?)\}\}/g, function(match, key) { return data[key] });
+  },
+  
   extend: function(target, source) {
     if (!target || !source) return target;
     this.each(source, function(key, value) {

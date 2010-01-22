@@ -18,7 +18,9 @@ module Acceptance
       
       {:too_long => [:maximum, :end], :too_short => [:minimum, :begin], :wrong_length => [:is]}.each do |message_type, (constraint, range_attr)|
         define_method(message_type) do
-          if @options.has_key?(message_type)
+          if @options.has_key?(:message)
+            "#{ @field.to_s.humanize } #{ @options[:message] }"
+          elsif @options.has_key?(message_type)
             "#{ @field.to_s.humanize } #{ @options[message_type] }"
           else
             count = @options[constraint] || (within && range_attr && within.__send__(range_attr))
