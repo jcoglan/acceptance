@@ -145,7 +145,7 @@ module Acceptance
       # TODO support custom messages from the generator
       <<-SCRIPT
       #{ rule_base validation }.toHaveLength(#{ value },
-      #{ options_for validation, :too_short, :too_long, :wrong_length });
+      #{ options_for validation, :too_short, :too_long, :wrong_length, :allow_blank? });
       SCRIPT
     end
     

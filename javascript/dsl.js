@@ -77,19 +77,25 @@ Acceptance.DSL = {
       return this;
     },
     
-    toHaveLength: function(options, messages) {
-      var min = options.minimum, max = options.maximum;
+    toHaveLength: function(settings, options) {
+      var min     = settings.minimum,
+          max     = settings.maximum,
+          options = options || {};
+      
       this._field.addTest(function(result, validation) {
         var value = validation.getValue(), length = value.length;
         
+        if (options.allowBlank && !Acceptance.trim(value))
+          return result( true );
+        
         if (min !== undefined && length < min)
-          return result( [Acceptance.interpolate(messages.tooShort, {count: min})] );
+          return result( [Acceptance.interpolate(options.tooShort, {count: min})] );
         
         if (max !== undefined && length > max)
-          return result( [Acceptance.interpolate(messages.tooLong, {count: max})] );
+          return result( [Acceptance.interpolate(options.tooLong, {count: max})] );
         
-        if (typeof options === 'number' && length !== options)
-          return result( [Acceptance.interpolate(messages.wrongLength, {count: options})] );
+        if (typeof settings === 'number' && length !== settings)
+          return result( [Acceptance.interpolate(options.wrongLength, {count: settings})] );
         
         result( true );
       });

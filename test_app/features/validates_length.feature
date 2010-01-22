@@ -19,6 +19,13 @@ Feature: Client-side length validation
     | within: 2..5 | F       | not see "Title is valid" | see "Title is too short \(minimum is 2 characters\)"           | 
     | within: 2..5 | Affairs | not see "Title is valid" | see "Title is too long \(maximum is 5 characters\)"            | 
   
+  Scenario: Don't validate new articles
+    Given the Article class validates length of title (minimum: 20) on update
+    When I visit "/articles/new"
+    And I fill in "Title" with "This is too short"
+    And I focus the "Save" button
+    Then I should not see "Title is too short"
+  
   Scenario Outline: Seeing a custom error message
     Given the Article class validates length of title (<validation>) with message "must be the right length"
     When I visit "/articles/new"
@@ -48,4 +55,12 @@ Feature: Client-side length validation
     | is: 5        | Hugh    | wrong_length | should be exactly {{count}}         | should be exactly 5         | 
     | within: 2..5 | F       | too_short    | would like {{count}} or more        | would like 2 or more        | 
     | within: 2..5 | Affairs | too_long     | can't accept more than {{count}}    | can't accept more than 5    | 
+  
+  Scenario: Handling blank values as titles
+    Given the Article class validates length of title (minimum: 20) with allow_blank true
+    When I visit "/articles/new"
+    And I focus the "Title" field
+    And I focus the "Save" button
+    Then I should see "Title is valid"
+    And I should not see "Title is too short"
 
