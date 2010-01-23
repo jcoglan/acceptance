@@ -2,7 +2,6 @@ Acceptance.Validation = Acceptance.Class({
   initialize: function(object) {
     Acceptance.extend(this, object);
     this._errors        = [];
-    this._valid         = true;
     this._indeterminate = false;
     this._cancelled     = false;
     this._callbacks     = [];
@@ -10,6 +9,10 @@ Acceptance.Validation = Acceptance.Class({
   
   getForm: function() {
     return this._form;
+  },
+  
+  getDisplayName: function() {
+    return this._displayName;
   },
   
   getInput: function() {
@@ -29,12 +32,12 @@ Acceptance.Validation = Acceptance.Class({
   },
   
   isValid: function() {
-    return this._valid;
+    return this._errors.length === 0 &&
+           this._indeterminate === false;
   },
   
   addError: function(message) {
     this._errors.push(message);
-    this._valid = false;
   },
   
   getErrorMessages: function() {

@@ -13,12 +13,16 @@ Acceptance.Field = Acceptance.Class({
     if (this._hasInput()) return this._input;
     
     this._input = Acceptance.Dom.getInputs(this._form.getForm(), this._fieldName)[0];
+    if (!this._input) throw 'Could not find field with name "' + this._fieldName + '" in form "' + this._form.getForm().id + '"';
+    
     Acceptance.Event.on(this._input, 'blur', function() { this.validate('blur') }, this);
     
     Acceptance.Event.on(this._input, 'focus', function() {
       this._touched = true;
       this._cancelValidation();
     }, this);
+    
+    this._displayName = (Acceptance.Dom.getLabel(this._input) || {}).innerHTML;
     
     return this._input;
   },
@@ -53,15 +57,18 @@ Acceptance.Field = Acceptance.Class({
   validate: function(eventType, callback, scope) {
     this._cancelValidation();
     
-    var tests = this._tests.slice(),
+    var validation = this._currentValidation =
+        this._generateValidationObject(eventType),
+        
+        tests = this._tests.slice(),
         i     = 0,
         n     = tests.length,
         self  = this;
     
-    if (n === 0) return (callback instanceof Function) && callback.call(scope);
-    
-    var validation = this._currentValidation =
-        this._generateValidationObject(eventType);
+    if (n === 0) {
+      this._valid = true;
+      return this._notifyObservers(validation, callback, scope);
+    }
     
     Acceptance.each(tests, function(test) {
       test(function(result) {
@@ -103,11 +110,12 @@ Acceptance.Field = Acceptance.Class({
         value    = formData[this._fieldName];
     
     return Acceptance.Validation.create({
-      _form:      this._form.getForm(),
-      _input:     this.getInput(),
-      _value:     value,
-      _data:      formData,
-      _eventType: eventType
+      _form:        this._form.getForm(),
+      _input:       this.getInput(),
+      _displayName: this._displayName,
+      _value:       value,
+      _data:        formData,
+      _eventType:   eventType
     });
   }
   

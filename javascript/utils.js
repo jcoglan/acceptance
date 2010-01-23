@@ -13,9 +13,11 @@ Acceptance = {
   },
   
   arrayIncludes: function(array, value) {
-    var i = array.length;
+    var i = array.length, item;
     while (i--) {
-      if (array[i] === value) return true;
+      item = array[i];
+      if (item === value) return true;
+      if (typeof item === 'number' && item === parseFloat(value)) return true;
     }
     return false;
   },
@@ -23,6 +25,10 @@ Acceptance = {
   trim: function(string) {
     if (!string) return '';
     return string.replace(/^\s*/g, '').replace(/\s*$/g, '');
+  },
+  
+  interpolate: function(template, data) {
+    return template.replace(/\{\{(\w+?)\}\}/g, function(match, key) { return data[key] });
   },
   
   extend: function(target, source) {

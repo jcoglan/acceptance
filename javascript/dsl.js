@@ -36,25 +36,27 @@ Acceptance.DSL = {
     },
     
     toBeChecked: function(message) {
-      this._field.addTest(function(returns, validation) {
+      this._field.addTest(function(result, validation) {
         var input = validation.getInput();
-        returns( (value === input.value && input.checked) || [message] );
+        result( input.checked || [message] );
       });
       return this;
     },
     
-    toBeOneOf: function(list, message) {
-      this._field.addTest(function(returns, validation) {
-        var value = validation.getValue();
-        returns( Acceptance.arrayIncludes(list, value) || [message] );
+    toBeOneOf: function(list, message, options) {
+      options = options || {};
+      this._field.addTest(function(result, validation) {
+        var value = Acceptance.trim(validation.getValue());
+        if (options.allowBlank && !Acceptance.trim(value)) return result( true );
+        result( Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
     },
     
     toBeNoneOf: function(list, message) {
-      this._field.addTest(function(returns, validation) {
-        var value = validation.getValue();
-        returns( !Acceptance.arrayIncludes(list, value) || [message] );
+      this._field.addTest(function(result, validation) {
+        var value = Acceptance.trim(validation.getValue());
+        result( !Acceptance.arrayIncludes(list, value) || [message] );
       });
       return this;
     },
@@ -67,31 +69,45 @@ Acceptance.DSL = {
         if (this._field.isTouched()) this._field.validate('change');
       }, this);
       
-      this._field.addTest(function(returns, validation) {
-        if (!targetValid) return returns( null );
+      this._field.addTest(function(result, validation) {
+        if (!targetValid) return result( null );
         var value = validation.getValue();
-        returns( (value === validation.get(field)) || [message] );
+        result( (value === validation.get(field)) || [message] );
       });
       return this;
     },
     
-    toHaveLength: function(options, message) {
-      var min = options.minimum, max = options.maximum;
-      this._field.addTest(function(returns, validation) {
-        var value = validation.getValue();
-        returns ( (typeof options === 'number' && value.length !== options && [message]) ||
-                  (min !== undefined && value.length < min && [message]) ||
-                  (max !== undefined && value.length > max && [message]) ||
-                  true
-                );
+    toHaveLength: function(settings, options) {
+      var min     = settings.minimum,
+          max     = settings.maximum,
+          options = options || {};
+      
+      this._field.addTest(function(result, validation) {
+        var value = validation.getValue(), length = value.length;
+        
+        if (options.allowBlank && !Acceptance.trim(value))
+          return result( true );
+        
+        if (min !== undefined && length < min)
+          return result( [Acceptance.interpolate(options.tooShort, {count: min})] );
+        
+        if (max !== undefined && length > max)
+          return result( [Acceptance.interpolate(options.tooLong, {count: max})] );
+        
+        if (typeof settings === 'number' && length !== settings)
+          return result( [Acceptance.interpolate(options.wrongLength, {count: settings})] );
+        
+        result( true );
       });
       return this;
     },
     
-    toMatch: function(pattern, message) {
-      this._field.addTest(function(returns, validation) {
+    toMatch: function(pattern, message, options) {
+      options = options || {};
+      this._field.addTest(function(result, validation) {
         var value = validation.getValue();
-        returns( pattern.test(value) || [message] );
+        if (options.allowBlank && !Acceptance.trim(value)) return result( true );
+        result( pattern.test(value) || [message] );
       });
       return this;
     }

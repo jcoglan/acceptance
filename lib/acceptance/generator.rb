@@ -1,6 +1,16 @@
 module Acceptance
   class Generator
     
+    TEMPLATE = <<-JAVASCRIPT
+    <script type="text/javascript" id="<%= form_id %>_validation">
+    (function() {
+      <% validations.each do |validation| -%>
+        <%= generate_code_for validation %>
+      <% end -%>
+    })();
+    </script>
+    JAVASCRIPT
+    
     def self.disable!
       @disabled = true
     end
@@ -40,7 +50,8 @@ module Acceptance
     
     def validations
       @object.class.reflect_on_all_validations.select do |validation|
-        @fields.include?(validation.field)
+        field = (validation.macro == :confirmation) ? "#{validation.field}_confirmation" : validation.field
+        @fields.include?(field.to_sym)
       end
     end
     
@@ -56,9 +67,7 @@ module Acceptance
     
     def message_for(validation)
       method = "generate_#{validation.macro}_message"
-      message = respond_to?(method) ?
-                __send__(method, validation) :
-                "#{ validation.field.to_s.humanize } #{ validation.message }"
+      message = respond_to?(method) ? __send__(method, validation) : validation.message
       message.inspect
     end
     
@@ -66,16 +75,16 @@ module Acceptance
       "'#{ object_name }[#{ validation.field }]'"
     end
     
-    TEMPLATE = <<-JAVASCRIPT
-    <script type="text/javascript" id="<%= form_id %>_validation">
-    (function() {
-      <% validations.each do |validation| -%>
-        <%= generate_code_for validation %>
-      <% end -%>
-    })();
-    </script>
-    JAVASCRIPT
-    
+    def options_for(validation, *keys)
+      options = keys.inject({}) do |table, key|
+        javascript_key = key.to_s.gsub(/\?$/, "").gsub(/_([a-z])/) { $1.upcase }
+        table[javascript_key] = validation.__send__(key)
+        table
+      end
+      "{" + options.map { |(key, value)|
+        "#{key}: #{value.nil? ? 'null' : value.inspect}"
+      } * ", " + "}"
+    end
   end
   
   class DefaultGenerator < Generator
@@ -96,17 +105,32 @@ module Acceptance
     end
     
     validate :exclusion do |validation|
-      "#{ rule_base validation }.toBeNoneOf(#{ validation.in.to_a.inspect }, #{ message_for validation});"
+      <<-SCRIPT
+      #{ rule_base validation }.
+      toBeNoneOf(#{ validation.in.to_a.inspect },
+                 #{ message_for validation },
+                 #{ options_for validation, :allow_blank? });
+      SCRIPT
     end
     
     validate :inclusion do |validation|
-      "#{ rule_base validation }.toBeOneOf(#{ validation.in.to_a.inspect }, #{ message_for validation});"
+      <<-SCRIPT
+      #{ rule_base validation }.
+      toBeOneOf(#{ validation.in.to_a.inspect },
+                #{ message_for validation },
+                #{ options_for validation, :allow_blank? });
+      SCRIPT
     end
     
     validate :format do |validation|
       pattern = validation.pattern
       flags = (pattern.options & Regexp::IGNORECASE).nonzero? ? 'i' : ''
-      "#{ rule_base validation }.toMatch(/#{ pattern.source }/#{ flags }, #{ message_for validation });"
+      <<-SCRIPT
+      #{ rule_base validation }.
+      toMatch(/#{ pattern.source }/#{ flags },
+              #{ message_for validation },
+              #{ options_for validation, :allow_blank? });
+      SCRIPT
     end
     
     validate :length do |validation|
@@ -118,7 +142,11 @@ module Acceptance
         max = range ? range.max : validation.maximum
         value = "{" + [min && "minimum: #{min}", max && "maximum: #{max}"].compact.join(', ') + "}"
       end
-      "#{ rule_base validation }.toHaveLength(#{ value }, #{ message_for validation });"
+      # TODO support custom messages from the generator
+      <<-SCRIPT
+      #{ rule_base validation }.toHaveLength(#{ value },
+      #{ options_for validation, :too_short, :too_long, :wrong_length, :allow_blank? });
+      SCRIPT
     end
     
     validate :presence do |validation|

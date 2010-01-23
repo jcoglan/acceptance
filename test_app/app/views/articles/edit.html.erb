@@ -1,0 +1,11 @@
+<% validated_form_for(@article) do |f| %>
+  <%= field f, :terms, :check_box %>
+  
+  <%= field f, :password, :password_field %>
+  <%= field f, :password_confirmation, :password_field %>
+  
+  <%= field f, :title %>
+  
+  <%= submit_tag "Save" %>
+<% end %>
+
