@@ -82,7 +82,8 @@ module Acceptance
         table
       end
       "{" + options.map { |(key, value)|
-        "#{key}: #{value.nil? ? 'null' : value.inspect}"
+        print_value = (key == 'message') ? message_for(validation) : value.inspect
+        "#{key}: #{print_value.gsub(/^nil$/, 'null')}"
       } * ", " + "}"
     end
   end
@@ -134,18 +135,17 @@ module Acceptance
     end
     
     validate :length do |validation|
-      if validation.is
-        value = validation.is
+      value = if validation.is
+        validation.is
       else
-        range = validation.within # TODO alias as #in
+        range = validation.within
         min = range ? range.min : validation.minimum
         max = range ? range.max : validation.maximum
-        value = "{" + [min && "minimum: #{min}", max && "maximum: #{max}"].compact.join(', ') + "}"
+        "{" + [min && "minimum: #{min}", max && "maximum: #{max}"].compact.join(', ') + "}"
       end
-      # TODO support custom messages from the generator
       <<-SCRIPT
       #{ rule_base validation }.toHaveLength(#{ value },
-      #{ options_for validation, :too_short, :too_long, :wrong_length, :allow_blank? });
+      #{ options_for validation, :message, :too_short, :too_long, :wrong_length, :allow_blank? });
       SCRIPT
     end
     

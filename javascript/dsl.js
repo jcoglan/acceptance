@@ -78,9 +78,12 @@ Acceptance.DSL = {
     },
     
     toHaveLength: function(settings, options) {
-      var min     = settings.minimum,
-          max     = settings.maximum,
-          options = options || {};
+      var min         = settings.minimum,
+          max         = settings.maximum,
+          options     = options || {},
+          tooShort    = options.message || options.tooShort,
+          tooLong     = options.message || options.tooLong,
+          wrongLength = options.message || options.wrongLength;
       
       this._field.addTest(function(result, validation) {
         var value = validation.getValue(), length = value.length;
@@ -89,13 +92,13 @@ Acceptance.DSL = {
           return result( true );
         
         if (min !== undefined && length < min)
-          return result( [Acceptance.interpolate(options.tooShort, {count: min})] );
+          return result( [Acceptance.interpolate(tooShort, {count: min})] );
         
         if (max !== undefined && length > max)
-          return result( [Acceptance.interpolate(options.tooLong, {count: max})] );
+          return result( [Acceptance.interpolate(tooLong, {count: max})] );
         
         if (typeof settings === 'number' && length !== settings)
-          return result( [Acceptance.interpolate(options.wrongLength, {count: settings})] );
+          return result( [Acceptance.interpolate(wrongLength, {count: settings})] );
         
         result( true );
       });
