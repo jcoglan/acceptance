@@ -7,6 +7,11 @@ end
 module Acceptance
   class << self
     attr_accessor :generator
+    
+    def yield_with(identifier = nil)
+      return @yield_identifier if identifier.nil?
+      @yield_identifier = identifier
+    end
   end
   
   self.generator = DefaultGenerator
