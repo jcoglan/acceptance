@@ -48,6 +48,10 @@ Acceptance = {
     
     klass.prototype.klass = klass;
     return klass;
+  },
+  
+  submit: function(form) {
+    form.submit();
   }
 };
 

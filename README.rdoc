@@ -290,6 +290,21 @@ out of a validation by calling it as a method, though boolean option
 methods do end with a question mark.
 
 
+== Development
+
+To run the features, you'll need this lot:
+
+  sudo aptitude install jruby
+  sudo jruby -S gem install celerity
+  sudo gem install cucumber culerity
+  
+  rake build
+  
+  cd test_app
+  RAILS_ENV=culerity_development rake db:schema:load
+  cucumber features
+
+
 == License
 
 Copyright (c) 2009 James Coglan, released under the MIT license.

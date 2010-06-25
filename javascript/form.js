@@ -23,7 +23,7 @@ Acceptance.Form = Acceptance.Class({
   
   _handleSubmit: function(form, event) {
     event.stopDefault();
-    this.isValid('submit', function(valid) { if (valid) form.submit() });
+    this.isValid('submit', function(valid) { if (valid) Acceptance.submit(form) });
   },
   
   isValid: function(eventType, callback, scope) {
